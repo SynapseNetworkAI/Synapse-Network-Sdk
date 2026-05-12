@@ -79,11 +79,11 @@ export async function fixedTarget(
 
   const echoServices = await synapse.search(SYNAPSE_ECHO_SERVICE_ID, { limit: 10 });
   const echoService = echoServices.find(
-    (service) => (service.serviceId ?? service.id) === SYNAPSE_ECHO_SERVICE_ID && isFreeFixedApiService(service)
+    (service) => serviceId(service) === SYNAPSE_ECHO_SERVICE_ID && isFreeFixedApiService(service)
   );
   if (echoService) {
     return {
-      serviceId: echoService.serviceId ?? echoService.id ?? "",
+      serviceId: serviceId(echoService) ?? "",
       costUsdc: pricingAmount(echoService),
       payload,
     };
@@ -98,10 +98,14 @@ export async function fixedTarget(
     );
   }
   return {
-    serviceId: service.serviceId ?? service.id ?? "",
+    serviceId: serviceId(service) ?? "",
     costUsdc: pricingAmount(service),
     payload,
   };
+}
+
+export function serviceId(service: ServiceRecord): string | undefined {
+  return service.serviceId ?? service.service_id ?? service.id;
 }
 
 export function pricingAmount(service: ServiceRecord): string {
@@ -115,11 +119,19 @@ export function pricingAmount(service: ServiceRecord): string {
 
 export function isFreeFixedApiService(service: ServiceRecord): boolean {
   return (
-    Boolean(service.serviceId ?? service.id) &&
-    String(service.serviceKind ?? "").toLowerCase() === "api" &&
-    String(service.priceModel ?? "").toLowerCase() === "fixed" &&
+    Boolean(serviceId(service)) &&
+    String(service.serviceKind ?? service.service_kind ?? "").toLowerCase() === "api" &&
+    String(service.priceModel ?? service.price_model ?? pricingPriceModel(service) ?? "").toLowerCase() === "fixed" &&
     decimalEquals(pricingAmount(service), "0")
   );
+}
+
+function pricingPriceModel(service: ServiceRecord): string | undefined {
+  const pricing = service.pricing;
+  if (pricing && typeof pricing === "object" && "priceModel" in pricing) {
+    return String(pricing.priceModel ?? "");
+  }
+  return undefined;
 }
 
 export async function awaitReceipt(synapse: SynapseClient, invocationId: string) {

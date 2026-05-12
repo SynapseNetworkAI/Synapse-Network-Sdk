@@ -74,7 +74,7 @@ final class ExampleSupport {
   static boolean isFreeFixedApiService(SynapseClient.ServiceRecord service) {
     return service.serviceId() != null
         && "api".equalsIgnoreCase(service.serviceKind())
-        && "fixed".equalsIgnoreCase(service.priceModel())
+        && "fixed".equalsIgnoreCase(firstNonBlank(service.priceModel(), pricingPriceModel(service)))
         && decimalEquals(pricingAmount(service), "0");
   }
 
@@ -217,6 +217,10 @@ final class ExampleSupport {
 
   private static String pricingAmount(SynapseClient.ServiceRecord service) {
     return service.pricing() == null ? "" : service.pricing().path("amount").asText("");
+  }
+
+  private static String pricingPriceModel(SynapseClient.ServiceRecord service) {
+    return service.pricing() == null ? "" : service.pricing().path("priceModel").asText("");
   }
 
   private static void putIfPresent(Map<String, String> target, String key, String value) {

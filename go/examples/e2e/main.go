@@ -163,7 +163,7 @@ func fixedService(ctx context.Context, client *synapse.Client) (string, string, 
 func isFreeFixedAPIService(service synapse.ServiceRecord, amount string) bool {
 	return strings.TrimSpace(service.ServiceID) != "" &&
 		strings.EqualFold(service.ServiceKind, "api") &&
-		strings.EqualFold(service.PriceModel, "fixed") &&
+		strings.EqualFold(firstNonEmpty(service.PriceModel, moneyString(service.Pricing["priceModel"])), "fixed") &&
 		decimalEqual(amount, "0")
 }
 

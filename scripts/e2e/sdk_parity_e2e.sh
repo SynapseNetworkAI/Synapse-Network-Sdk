@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
+source "$ROOT_DIR/scripts/e2e/staging_env_loader.sh"
+
 LANGUAGES="python,typescript,go,java,dotnet"
 TARGET_ENV="staging"
 RUN_RUNTIME=true
@@ -27,8 +29,10 @@ Required:
   SYNAPSE_OWNER_PRIVATE_KEY    Owner wallet private key for auth challenge signing
 
 Runtime invoke requirements:
-  SYNAPSE_AGENT_KEY            Optional. If missing, the script issues a short-lived
-                               staging/local credential from SYNAPSE_OWNER_PRIVATE_KEY.
+  SYNAPSE_AGENT_KEY            Optional fallback. For staging, the script issues a
+                               short-lived credential from SYNAPSE_OWNER_PRIVATE_KEY
+                               by default so stale stored credentials do not block
+                               release readiness checks.
 
 Environment rules:
   --env staging                Uses SDK staging preset unless SYNAPSE_GATEWAY_URL overrides it
@@ -42,6 +46,13 @@ Optional runtime service overrides:
   SYNAPSE_E2E_LLM_SERVICE_ID
   SYNAPSE_E2E_LLM_MAX_COST_USDC
   SYNAPSE_E2E_LLM_PAYLOAD_JSON
+  SYNAPSE_E2E_LOAD_SECRET_MANAGER
+                               Set to 0 to disable staging Secret Manager lookup.
+  SYNAPSE_E2E_SECRET_MANAGER_OVERRIDE
+                               Defaults to 1. Set to 0 to keep explicit env values.
+  SYNAPSE_E2E_ISSUE_AGENT_KEY  Defaults to 1 for staging. Set to 0 to use the
+                               loaded or explicit SYNAPSE_AGENT_KEY directly.
+  SYNAPSE_GCP_PROJECT           Optional Google Cloud project override.
 
 Optional full side-effecting checks:
   RUN_SDK_PARITY_FULL_E2E=1
@@ -88,6 +99,8 @@ done
 case "$TARGET_ENV" in
   staging)
     export SYNAPSE_ENV=staging
+    load_staging_e2e_secrets
+    export SYNAPSE_E2E_ISSUE_AGENT_KEY="${SYNAPSE_E2E_ISSUE_AGENT_KEY:-1}"
     ;;
   local)
     if [[ -z "${SYNAPSE_GATEWAY_URL:-}" ]]; then
@@ -143,6 +156,15 @@ ensure_python3() {
   command -v python3 >/dev/null 2>&1 || brew_install python
 }
 
+python_e2e_bin() {
+  local venv_python="$ROOT_DIR/python/.venv/bin/python"
+  if [[ -x "$venv_python" ]]; then
+    echo "$venv_python"
+  else
+    command -v python3
+  fi
+}
+
 ensure_node() {
   command -v npm >/dev/null 2>&1 || brew_install node
   if [[ ! -d "$ROOT_DIR/typescript/node_modules" ]]; then
@@ -185,10 +207,17 @@ ensure_dotnet() {
   if has_dotnet_8; then
     return
   fi
+  local dotnet_dir="${SYNAPSE_E2E_DOTNET_DIR:-$HOME/.synapse-network-sdk-e2e/dotnet}"
+  if [[ -x "$dotnet_dir/dotnet" ]]; then
+    export DOTNET_ROOT="$dotnet_dir"
+    export PATH="$DOTNET_ROOT:$PATH"
+    if has_dotnet_8; then
+      return
+    fi
+  fi
   if [[ "$INSTALL_MISSING" != "true" ]]; then
     fail_missing_tool ".NET SDK 8.0"
   fi
-  local dotnet_dir="${SYNAPSE_E2E_DOTNET_DIR:-$HOME/.synapse-network-sdk-e2e/dotnet}"
   mkdir -p "$dotnet_dir"
   echo "[e2e:sdk-parity] installing .NET SDK 8.0 into $dotnet_dir"
   curl -fsSL https://dot.net/v1/dotnet-install.sh -o "$dotnet_dir/dotnet-install.sh"
@@ -198,44 +227,19 @@ ensure_dotnet() {
 }
 
 ensure_agent_key() {
-  if [[ -n "${SYNAPSE_AGENT_KEY:-}" || "$RUN_RUNTIME" != "true" ]]; then
+  if [[ "$RUN_RUNTIME" != "true" ]]; then
+    return
+  fi
+  if [[ "${SYNAPSE_E2E_ISSUE_AGENT_KEY:-0}" != "1" && -n "${SYNAPSE_AGENT_KEY:-}" ]]; then
     return
   fi
   ensure_python3
-  echo "[e2e:sdk-parity] SYNAPSE_AGENT_KEY missing; issuing a temporary credential"
-  SYNAPSE_AGENT_KEY="$(
-    PYTHONPATH="$ROOT_DIR/python" python3 - <<'PY'
-import os
-
-from synapse_client import SynapseAuth
-from synapse_client.exceptions import AuthenticationError
-
-auth = SynapseAuth.from_private_key(
-    os.environ["SYNAPSE_OWNER_PRIVATE_KEY"],
-    environment=os.environ.get("SYNAPSE_ENV", "staging"),
-    gateway_url=os.environ.get("SYNAPSE_GATEWAY_URL") or None,
-)
-try:
-    result = auth.issue_credential(
-        name=f"{os.environ.get('E2E_RUN_ID', 'sdk-parity')}-agent",
-        max_calls=20,
-        rpm=60,
-        expires_in_sec=3600,
-    )
-    print(result.token)
-except AuthenticationError:
-    credentials = auth.list_active_credentials()
-    if not credentials:
-        raise
-    print(auth._usable_token_for_credential(credentials[0]))
-PY
-  )"
-  export SYNAPSE_AGENT_KEY
+  issue_e2e_agent_key_from_owner "$ROOT_DIR" "$(python_e2e_bin)"
 }
 
 emit_owner_event_python() {
   ensure_python3
-  PYTHONPATH="$ROOT_DIR/python" python3 - <<'PY'
+  PYTHONPATH="$ROOT_DIR/python" "$(python_e2e_bin)" - <<'PY'
 import json
 import os
 

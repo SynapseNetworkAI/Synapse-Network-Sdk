@@ -614,6 +614,59 @@ test("invokeWithRediscovery handles string prices and missing discovered prices"
   expect(calls[2].body?.costUsdc).toBe(0.14);
 });
 
+test("invokeWithRediscovery accepts snake_case staging discovery records", async () => {
+  const calls: Array<{ url: string; body?: Record<string, unknown> }> = [];
+  let invokeCount = 0;
+  (globalThis as unknown as Record<string, unknown>).fetch = jest.fn(async (url: string, init?: RequestInit) => {
+    const body = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : undefined;
+    calls.push({ url, body });
+    if (url.includes("/api/v1/agent/invoke")) {
+      invokeCount += 1;
+      if (invokeCount === 1) {
+        return {
+          ok: false,
+          status: 422,
+          text: async () =>
+            JSON.stringify({
+              detail: {
+                code: "PRICE_MISMATCH",
+                message: "Price changed",
+                expectedPriceUsdc: 0.05,
+                currentPriceUsdc: 0.12,
+              },
+            }),
+        } as Response;
+      }
+      return {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify({ invocationId: "inv_snake_case_price", status: "SUCCEEDED" }),
+      } as Response;
+    }
+    return {
+      ok: true,
+      status: 200,
+      text: async () =>
+        JSON.stringify({
+          services: [
+            {
+              service_id: "svc_1",
+              service_kind: "api",
+              price_model: "fixed",
+              pricing: { amount: "0.12", currency: "USDC" },
+            },
+          ],
+        }),
+    } as Response;
+  });
+
+  const client = new SynapseClient({ credential: "agt_test" });
+  const result = await client.invokeWithRediscovery("svc_1", {}, { costUsdc: 0.05 });
+
+  expect(result.invocationId).toBe("inv_snake_case_price");
+  expect(calls[2].body?.costUsdc).toBe(0.12);
+});
+
 test("invokeWithRediscovery fails clearly when rediscovery cannot provide a price", async () => {
   let invokeCount = 0;
   (globalThis as unknown as Record<string, unknown>).fetch = jest.fn(async (url: string) => {

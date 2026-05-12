@@ -345,7 +345,7 @@ function invokeError(err: unknown): Error {
 }
 
 function serviceKey(service: ServiceRecord): string | undefined {
-  return service.serviceId ?? service.id;
+  return service.serviceId ?? service.service_id ?? service.id;
 }
 
 function extractServicePrice(service: ServiceRecord): number | null {

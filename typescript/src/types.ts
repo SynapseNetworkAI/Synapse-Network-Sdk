@@ -220,12 +220,15 @@ export interface LlmPricing {
 
 export interface ServiceRecord {
   serviceId?: string;
+  service_id?: string;
   id?: string;
   agentToolName?: string;
   serviceName?: string;
   status?: string;
   serviceKind?: ServiceKind | string;
+  service_kind?: ServiceKind | string;
   priceModel?: PriceModel | string;
+  price_model?: PriceModel | string;
   pricing?: FixedPricing | LlmPricing | string;
   inputPricePer1MTokensUsdc?: string;
   outputPricePer1MTokensUsdc?: string;
