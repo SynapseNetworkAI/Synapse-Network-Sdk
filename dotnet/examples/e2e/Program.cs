@@ -139,7 +139,7 @@ static bool IsFreeFixedApiService(ServiceRecord service, string amount)
 {
     return !string.IsNullOrWhiteSpace(service.ServiceId)
         && string.Equals(service.ServiceKind, "api", StringComparison.OrdinalIgnoreCase)
-        && string.Equals(service.PriceModel, "fixed", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(FirstNonBlank(service.PriceModel, PricingPriceModel(service)), "fixed", StringComparison.OrdinalIgnoreCase)
         && DecimalEquals(amount, "0");
 }
 
@@ -181,6 +181,13 @@ static string PricingAmount(ServiceRecord service)
 {
     return service.Pricing.HasValue && service.Pricing.Value.TryGetProperty("amount", out var amount)
         ? amount.GetString() ?? ""
+        : "";
+}
+
+static string PricingPriceModel(ServiceRecord service)
+{
+    return service.Pricing.HasValue && service.Pricing.Value.TryGetProperty("priceModel", out var priceModel)
+        ? priceModel.GetString() ?? ""
         : "";
 }
 

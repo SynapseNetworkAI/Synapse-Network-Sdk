@@ -1,6 +1,7 @@
 package ai.synapsenetwork.sdk;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -244,11 +245,15 @@ public final class SynapseClient {
 
   @JsonIgnoreProperties(ignoreUnknown = true)
   public record ServiceRecord(
+      @JsonAlias("service_id")
       @JsonProperty("serviceId") String serviceId,
       String id,
+      @JsonAlias("service_name")
       @JsonProperty("serviceName") String serviceName,
       String status,
+      @JsonAlias("service_kind")
       @JsonProperty("serviceKind") String serviceKind,
+      @JsonAlias("price_model")
       @JsonProperty("priceModel") String priceModel,
       JsonNode pricing,
       String summary,

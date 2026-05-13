@@ -69,6 +69,15 @@ func isFreeFixedAPIService(service synapse.ServiceRecord) bool {
 	}
 	return strings.TrimSpace(service.ServiceID) != "" &&
 		strings.EqualFold(service.ServiceKind, "api") &&
-		strings.EqualFold(service.PriceModel, "fixed") &&
+		strings.EqualFold(firstNonEmpty(service.PriceModel, fmt.Sprint(service.Pricing["priceModel"])), "fixed") &&
 		left.Sign() == 0
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" && strings.TrimSpace(value) != "<nil>" {
+			return value
+		}
+	}
+	return ""
 }

@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
+source "$ROOT_DIR/scripts/e2e/staging_env_loader.sh"
+
 LANGUAGES="python,typescript,go,java,dotnet"
 FREE_ONLY=false
 INSTALL_MISSING=true
@@ -22,7 +24,9 @@ Options:
   -h, --help                   Show this help
 
 Required:
-  SYNAPSE_AGENT_KEY            Staging Agent Key, e.g. agt_xxx
+  SYNAPSE_AGENT_KEY            Staging Agent Key, e.g. agt_xxx. Optional when
+                              SYNAPSE_OWNER_PRIVATE_KEY is available because the
+                              script can issue a short-lived runtime credential.
 
 Optional:
   SYNAPSE_GATEWAY_URL          Explicit Gateway URL; defaults to SDK staging
@@ -32,6 +36,14 @@ Optional:
   SYNAPSE_E2E_LLM_SERVICE_ID   Default: svc_deepseek_chat
   SYNAPSE_E2E_LLM_MAX_COST_USDC Default: 0.010000
   SYNAPSE_E2E_LLM_PAYLOAD_JSON
+  SYNAPSE_E2E_LOAD_SECRET_MANAGER
+                              Set to 0 to disable staging Secret Manager lookup.
+  SYNAPSE_E2E_SECRET_MANAGER_OVERRIDE
+                              Defaults to 1. Set to 0 to keep explicit env values.
+  SYNAPSE_E2E_ISSUE_AGENT_KEY Defaults to 1 when SYNAPSE_OWNER_PRIVATE_KEY is set
+                              and no explicit Gateway URL is used. Set to 0 to use
+                              the loaded or explicit SYNAPSE_AGENT_KEY directly.
+  SYNAPSE_GCP_PROJECT          Optional Google Cloud project override.
 EOF
 }
 
@@ -64,11 +76,6 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
-
-if [[ -z "${SYNAPSE_AGENT_KEY:-}" ]]; then
-  echo "[e2e:sdk-wave1] SYNAPSE_AGENT_KEY is required for real staging E2E" >&2
-  exit 2
-fi
 
 export SYNAPSE_E2E_FREE_ONLY="$FREE_ONLY"
 export SYNAPSE_E2E_SKIP_AUTH_NEGATIVE="$SKIP_AUTH_NEGATIVE"
@@ -148,11 +155,18 @@ ensure_dotnet() {
   if has_dotnet_8; then
     return
   fi
+  local dotnet_dir="${SYNAPSE_E2E_DOTNET_DIR:-$HOME/.synapse-network-sdk-e2e/dotnet}"
+  if [[ -x "$dotnet_dir/dotnet" ]]; then
+    export DOTNET_ROOT="$dotnet_dir"
+    export PATH="$DOTNET_ROOT:$PATH"
+    if has_dotnet_8; then
+      return
+    fi
+  fi
   if [[ "$INSTALL_MISSING" != "true" ]]; then
     fail_missing_tool ".NET SDK 8.0"
   fi
 
-  local dotnet_dir="${SYNAPSE_E2E_DOTNET_DIR:-$HOME/.synapse-network-sdk-e2e/dotnet}"
   mkdir -p "$dotnet_dir"
   echo "[e2e:sdk-wave1] installing .NET SDK 8.0 into $dotnet_dir"
   curl -fsSL https://dot.net/v1/dotnet-install.sh -o "$dotnet_dir/dotnet-install.sh"
@@ -166,6 +180,36 @@ ensure_python3() {
     return
   fi
   brew_install python
+}
+
+python_e2e_bin() {
+  local venv_python="$ROOT_DIR/python/.venv/bin/python"
+  if [[ -x "$venv_python" ]]; then
+    echo "$venv_python"
+  else
+    command -v python3
+  fi
+}
+
+prepare_runtime_credentials() {
+  if [[ -z "${SYNAPSE_GATEWAY_URL:-}" ]]; then
+    export SYNAPSE_ENV=staging
+    load_staging_e2e_secrets
+    if [[ -n "${SYNAPSE_OWNER_PRIVATE_KEY:-}" ]]; then
+      export SYNAPSE_E2E_ISSUE_AGENT_KEY="${SYNAPSE_E2E_ISSUE_AGENT_KEY:-1}"
+    fi
+  fi
+
+  if [[ "${SYNAPSE_E2E_ISSUE_AGENT_KEY:-0}" == "1" ]]; then
+    ensure_python3
+    issue_e2e_agent_key_from_owner "$ROOT_DIR" "$(python_e2e_bin)"
+    return
+  fi
+
+  if [[ -z "${SYNAPSE_AGENT_KEY:-}" ]]; then
+    echo "[e2e:sdk-wave1] SYNAPSE_AGENT_KEY is required for real staging E2E" >&2
+    exit 2
+  fi
 }
 
 ensure_node() {
@@ -225,7 +269,7 @@ run_language() {
     python)
       ensure_python3
       bash scripts/ci/python_checks.sh
-      run_and_validate python env PYTHONPATH="$ROOT_DIR/python" python3 python/examples/e2e.py
+      run_and_validate python env PYTHONPATH="$ROOT_DIR/python" "$(python_e2e_bin)" python/examples/e2e.py
       ;;
     typescript|ts)
       ensure_node
@@ -257,6 +301,8 @@ run_language() {
 }
 
 ensure_python3
+
+prepare_runtime_credentials
 
 IFS=',' read -r -a SELECTED_LANGUAGES <<< "$LANGUAGES"
 for language in "${SELECTED_LANGUAGES[@]}"; do
