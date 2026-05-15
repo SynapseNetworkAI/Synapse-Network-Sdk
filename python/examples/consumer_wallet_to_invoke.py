@@ -20,12 +20,12 @@ except ImportError:  # pragma: no cover - exercised by users without dev extras
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create a staging owner wallet, issue an agent credential, and invoke a free service.",
+        description="Create a production owner wallet, issue an agent credential, and invoke a free service.",
     )
     parser.add_argument(
         "--environment",
-        default=os.getenv("SYNAPSE_ENV", "staging").strip() or "staging",
-        help="Gateway environment preset. Defaults to staging.",
+        default=os.getenv("SYNAPSE_ENV", "prod").strip() or "prod",
+        help="Gateway environment preset. Defaults to prod.",
     )
     parser.add_argument(
         "--gateway-url",

@@ -8,7 +8,7 @@ namespace SynapseNetwork.Sdk;
 
 public sealed class SynapseClient
 {
-    public const string DefaultEnvironment = "staging";
+    public const string DefaultEnvironment = "prod";
     public const string StagingGatewayUrl = "https://api-staging.synapse-network.ai";
     public const string ProdGatewayUrl = "https://api.synapse-network.ai";
 

@@ -73,7 +73,7 @@ def new_client(credential: str) -> SynapseClient:
     return SynapseClient(
         api_key=credential,
         gateway_url=os.getenv("SYNAPSE_GATEWAY_URL") or None,
-        environment="staging",
+        environment=os.getenv("SYNAPSE_ENV", "prod"),
     )
 
 

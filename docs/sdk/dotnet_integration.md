@@ -18,7 +18,7 @@ using SynapseNetwork.Sdk;
 var client = new SynapseClient(new SynapseClientOptions
 {
     Credential = Environment.GetEnvironmentVariable("SYNAPSE_AGENT_KEY")!,
-    Environment = "staging",
+    Environment = "prod",
 });
 
 var services = await client.SearchAsync("svc_synapse_echo", new SearchOptions { Limit = 10 });
@@ -58,7 +58,7 @@ Use owner auth only in backend or operator tooling. Agent runtime code should ke
 ```csharp
 var auth = SynapseAuth.FromPrivateKey(
     Environment.GetEnvironmentVariable("SYNAPSE_OWNER_PRIVATE_KEY")!,
-    new SynapseAuthOptions { Environment = "staging" });
+    new SynapseAuthOptions { Environment = "prod" });
 
 var token = await auth.GetTokenAsync();
 var credential = await auth.IssueCredentialAsync(new CredentialOptions

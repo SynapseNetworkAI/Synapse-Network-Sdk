@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/Go-preview-blue.svg" />
   <img src="https://img.shields.io/badge/Java-17+-blue.svg" />
   <img src="https://img.shields.io/badge/.NET-8.0-blue.svg" />
-  <img src="https://img.shields.io/badge/Status-Public%20Preview-orange.svg" />
+  <img src="https://img.shields.io/badge/Status-Production-green.svg" />
   <img src="https://img.shields.io/badge/License-MIT-green.svg" />
 </p>
 
@@ -28,28 +28,30 @@ SynapseNetwork lets an agent discover services, invoke them through a gateway, a
 2. Create a `SynapseClient`.
 3. Search, invoke, and read the receipt.
 
-> Public Preview default: SDK examples use `staging`, backed by `https://api-staging.synapse-network.ai`.
-> After production launch, replace the public examples and tests with the `prod` environment.
+> Production default: SDK examples use `prod`, backed by `https://api.synapse-network.ai`.
+> Staging remains available as a sandbox for gated E2E and MockUSDC testing.
 
-## Staging Public Preview
+## Production Onboarding
 
-Today, public developer onboarding runs on staging:
+Public developer onboarding now runs on production:
 
-- Gateway: `https://api-staging.synapse-network.ai`
-- App docs: [staging.synapse-network.ai/docs/sdk](https://staging.synapse-network.ai/docs/sdk)
-- Chain: Arbitrum Sepolia testnet
-- Asset: MockUSDC for integration testing, not production USDC
+- Website: `https://www.synapse-network.ai`
+- SDK docs: `https://docs.synapse-network.ai/sdks`
+- Gateway API: `https://api.synapse-network.ai`
+- Asset: production USDC settlement through SynapseNetwork
 
 Recommended path:
 
-1. Connect a wallet in the staging Gateway Dashboard.
+1. Connect a wallet in the Synapse Gateway Dashboard.
 2. Get or issue an Agent Key and export it as `SYNAPSE_AGENT_KEY`.
-3. Set `SYNAPSE_ENV=staging`.
-4. Use the free first-party `svc_synapse_echo` smoke service first, or fund staging balance with MockUSDC before paid test calls.
+3. Set `SYNAPSE_ENV=prod`, or omit it because `prod` is the SDK default.
+4. Use the free first-party `svc_synapse_echo` smoke service first, then run paid calls with an explicitly funded account and credential budget.
 5. Run one fixed-price API invoke and one token-metered LLM invoke.
 6. Read the invocation receipt and verify settlement metadata.
 
-Developers should pass staging before any future production migration. Production docs and examples stay reserved until production DNS, contracts, gateway health, and docs deployment are verified.
+### Staging Sandbox
+
+Staging remains available for gated E2E and integration rehearsals only: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC test assets. Do not use staging credentials or MockUSDC examples as the public production quickstart.
 
 ## Choose Your Integration Path
 
@@ -72,16 +74,16 @@ Do not recompute money with floating-point math. Pass discovered prices and spen
 
 | Surface | Link | Status |
 |---|---|---|
-| SDK Hub | [staging.synapse-network.ai/docs/sdk](https://staging.synapse-network.ai/docs/sdk) | Public Preview |
-| Python SDK | [staging.synapse-network.ai/docs/sdk/python](https://staging.synapse-network.ai/docs/sdk/python) | Public Preview |
-| TypeScript SDK | [staging.synapse-network.ai/docs/sdk/typescript](https://staging.synapse-network.ai/docs/sdk/typescript) | Public Preview |
-| Production docs | Reserved until production docs are live | Reserved |
+| SDK Docs | [docs.synapse-network.ai/sdks](https://docs.synapse-network.ai/sdks) | Production |
+| Website | [www.synapse-network.ai](https://www.synapse-network.ai) | Production |
+| Gateway API | [api.synapse-network.ai](https://api.synapse-network.ai) | Production |
 
 ## Gateway Environments
 
 | Environment | Gateway URL | Intended use |
 |---|---|---|
-| `staging` | `https://api-staging.synapse-network.ai` | Public preview, test assets, integration trials |
+| `prod` | `https://api.synapse-network.ai` | Default production environment |
+| `staging` | `https://api-staging.synapse-network.ai` | Sandbox, gated E2E, MockUSDC integration rehearsals |
 
 Resolution rules:
 
@@ -89,7 +91,7 @@ Resolution rules:
 2. Explicit `environment`
 3. Python only: `SYNAPSE_GATEWAY`
 4. Python only: `SYNAPSE_ENV`
-5. Default: `staging`
+5. Default: `prod`
 
 The SDK never probes DNS and never falls back between environments automatically. This prevents production credentials or funds from being routed to the wrong gateway.
 
@@ -117,7 +119,7 @@ All five SDKs expose the same public capability families: agent runtime, owner w
 
 ## Examples By SDK
 
-All runnable examples default to staging and read `SYNAPSE_AGENT_KEY`.
+All runnable examples default to production and read `SYNAPSE_AGENT_KEY`.
 The fixed-price smoke examples first call `svc_synapse_echo`, then fall back to another free fixed-price service if echo is unavailable.
 
 | SDK | Free fixed-price smoke | LLM smoke | Full E2E |
@@ -148,7 +150,7 @@ Step 2: let your agent discover and work.
 
 ```bash
 pip install synapse-client
-export SYNAPSE_ENV=staging
+export SYNAPSE_ENV=prod
 export SYNAPSE_AGENT_KEY=agt_xxx
 ```
 
@@ -197,7 +199,7 @@ if (!agentKey) {
 
 const client = new SynapseClient({
   credential: agentKey,
-  environment: "staging",
+  environment: "prod",
 });
 
 const services = await client.search("svc_synapse_echo", {
@@ -260,7 +262,7 @@ from synapse_client import SynapseAuth
 
 auth = SynapseAuth.from_private_key(
     "0xYOUR_PRIVATE_KEY",
-    environment="staging",
+    environment="prod",
 )
 issued = auth.issue_credential(name="agent-preview", maxCalls=100, creditLimit=5)
 print(issued.credential.id, issued.token)
@@ -273,7 +275,7 @@ import { Wallet } from "ethers";
 import { SynapseAuth } from "@synapse-network-ai/sdk";
 
 const wallet = new Wallet(process.env.OWNER_PRIVATE_KEY!);
-const auth = SynapseAuth.fromWallet(wallet, { environment: "staging" });
+const auth = SynapseAuth.fromWallet(wallet, { environment: "prod" });
 const issued = await auth.issueCredential({
   name: "agent-preview",
   maxCalls: 100,
@@ -291,7 +293,7 @@ Python:
 ```python
 from synapse_client import SynapseAuth
 
-auth = SynapseAuth.from_private_key("0xYOUR_PRIVATE_KEY", environment="staging")
+auth = SynapseAuth.from_private_key("0xYOUR_PRIVATE_KEY", environment="prod")
 provider = auth.provider()
 
 secret = provider.issue_secret(name="weather-api")
@@ -312,7 +314,7 @@ import { Wallet } from "ethers";
 import { SynapseAuth } from "@synapse-network-ai/sdk";
 
 const auth = SynapseAuth.fromWallet(new Wallet(process.env.OWNER_PRIVATE_KEY!), {
-  environment: "staging",
+  environment: "prod",
 });
 const provider = auth.provider();
 
@@ -331,7 +333,7 @@ Credential handling and vulnerability reporting live in [SECURITY.md](./SECURITY
 
 ## Python Examples
 
-The Python examples are staging-first and live under `python/examples`.
+The Python examples are production-first and live under `python/examples`.
 
 ```bash
 cd python
@@ -346,7 +348,7 @@ PYTHONPATH="$PWD" .venv/bin/python examples/llm_smoke.py
 PYTHONPATH="$PWD" .venv/bin/python examples/e2e.py
 ```
 
-Register a provider service on staging:
+Register a provider service on production:
 
 ```bash
 PYTHONPATH="$PWD" .venv/bin/python examples/provider_staging_onboarding.py \
@@ -366,7 +368,7 @@ PYTHONPATH="$PWD" .venv/bin/python examples/consumer_call_provider.py \
   --payload-json '{"prompt":"hello"}'
 ```
 
-Create a fresh staging wallet, issue an Agent Key, and invoke a free service:
+Create a fresh production wallet, issue an Agent Key, and invoke a free service:
 
 ```bash
 PYTHONPATH="$PWD" .venv/bin/python examples/consumer_wallet_to_invoke.py \

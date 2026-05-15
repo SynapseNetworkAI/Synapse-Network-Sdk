@@ -2,7 +2,7 @@
 
 This matrix keeps the SDK repo aligned with the Gateway and product docs in `Synapse-Network`. Public examples should describe these SDK surfaces first; raw Gateway routes remain implementation detail unless a developer is integrating without the SDK.
 
-Current public environment: staging on Arbitrum Sepolia with MockUSDC test assets.
+Current public environment: production at `https://api.synapse-network.ai`. Staging remains a sandbox/E2E target on Arbitrum Sepolia with MockUSDC test assets.
 
 ## Agent Runtime
 
@@ -36,6 +36,6 @@ Current public environment: staging on Arbitrum Sepolia with MockUSDC test asset
 ## Documentation Rules
 
 1. Public docs should point developers to SDK methods before raw REST routes.
-2. Public docs should say staging, Arbitrum Sepolia, and MockUSDC until production launch.
+2. Public docs should point to production by default and mention staging only as a sandbox/E2E target.
 3. Public docs must not show private local gateway setup as the public SDK onboarding path.
 4. Public SDK examples should use `SYNAPSE_AGENT_KEY`, string money values, and named result objects.

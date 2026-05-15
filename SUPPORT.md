@@ -1,15 +1,14 @@
 # Support
 
-## Public Preview Support
+## Production Support
 
-The SDK is currently documented for staging public preview:
+The SDK is currently documented for production:
 
-- Gateway: `https://api-staging.synapse-network.ai`
-- App docs: `https://staging.synapse-network.ai/docs/sdk`
-- Chain: Arbitrum Sepolia
-- Asset: MockUSDC, not production USDC
+- Website: `https://www.synapse-network.ai`
+- SDK docs: `https://docs.synapse-network.ai/sdks`
+- Gateway API: `https://api.synapse-network.ai`
 
-Developers should validate integrations on staging before any future production migration.
+Staging remains available only as a sandbox/E2E target: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC.
 
 ## Before Opening an Issue
 
@@ -17,7 +16,7 @@ Please include:
 
 - SDK language and version.
 - Whether you are using fixed-price `invoke()` / `invoke` or token-metered `invoke_llm()` / `invokeLlm()`.
-- Gateway environment, normally `staging`.
+- Gateway environment, normally `prod`.
 - Request ID and idempotency key if an invocation failed.
 - Redacted error payloads and stack traces.
 

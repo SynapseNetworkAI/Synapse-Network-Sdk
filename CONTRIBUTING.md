@@ -1,13 +1,13 @@
 # Contributing
 
-Thanks for improving the SynapseNetwork SDK. This repository is public-facing, so every change should keep the developer and AI-agent onboarding path clear, staging-first, and safe.
+Thanks for improving the SynapseNetwork SDK. This repository is public-facing, so every change should keep the developer and AI-agent onboarding path clear, prod-first, and safe.
 
 ## Before You Start
 
 1. Read `llms.txt`.
 2. Use `SYNAPSE_AGENT_KEY` for agent runtime examples.
-3. Treat `staging` as the only public preview environment.
-4. Use Arbitrum Sepolia and MockUSDC in staging docs; do not document local gateway setup as the public integration path.
+3. Treat `prod` as the public default environment.
+4. Use staging only for sandbox/E2E docs with Arbitrum Sepolia and MockUSDC; do not document local gateway setup as the public integration path.
 5. Never commit private keys, seed phrases, real credentials, or production tokens.
 
 ## Development

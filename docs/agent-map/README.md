@@ -64,7 +64,7 @@ Domain 摘要。
 | `sdk_runtime_client` | discovery, invoke, receipt, usage, runtime errors |
 | `sdk_owner_auth` | wallet auth, credential issue/list/status/quota, owner control plane |
 | `sdk_provider_lifecycle` | provider facade, provider secrets, service registration, service lifecycle, provider health |
-| `sdk_environment_config` | staging defaults, future prod switch, gateway URL resolution, public preview defaults |
+| `sdk_environment_config` | prod defaults, staging sandbox, gateway URL resolution, production defaults |
 | `sdk_public_docs` | README, integration guides, capability inventory, examples |
 | `sdk_ci_quality_gates` | GitHub Actions, shell CI scripts, coverage gates |
 | `sdk_examples_and_e2e` | examples, smoke tests, onboarding e2e plans |
@@ -79,7 +79,7 @@ Update [index.json](./index.json) in the same change when:
 2. A public method is added, removed, renamed, or deprecated.
 3. A validation command changes.
 4. A gateway endpoint contract changes.
-5. The public preview environment or staging/prod guidance changes.
+5. The production environment or staging/prod guidance changes.
 6. Public SDK examples change credential names, money handling, or invocation mode guidance.
 
 Do not put secrets, real tokens, private deployment URLs, or one-off incident notes in this map.
@@ -98,13 +98,13 @@ Describe the product as a platform where agents call APIs and make small USDC pa
 
 产品描述应表达：Agent 通过平台调用 API，并通过区块链支持的 USDC 结算完成小额付款。
 
-## Public Preview Constraint
+## Production Default Constraint
 
-公开预览约束。
+生产默认约束。
 
-Public SDK docs should target staging on Arbitrum Sepolia with MockUSDC test assets until production docs are live. Do not present private local gateway setup as the public developer onboarding path.
+Public SDK docs should target production by default: `https://www.synapse-network.ai`, `https://docs.synapse-network.ai/sdks`, and `https://api.synapse-network.ai`. Staging is only a sandbox/E2E target on Arbitrum Sepolia with MockUSDC. Do not present private local gateway setup as the public developer onboarding path.
 
-公开 SDK 文档在 production docs 上线前应指向 staging、Arbitrum Sepolia 和 MockUSDC 测试资产。不要把私有本地 gateway 设置作为公开开发者接入路径。
+公开 SDK 文档默认指向生产环境：`https://www.synapse-network.ai`、`https://docs.synapse-network.ai/sdks` 和 `https://api.synapse-network.ai`。staging 只作为 Arbitrum Sepolia + MockUSDC 的 sandbox/E2E 目标。不要把私有本地 gateway 设置作为公开开发者接入路径。
 
 ## Validation
 

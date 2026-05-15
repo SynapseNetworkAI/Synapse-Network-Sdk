@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	DefaultEnvironment = "staging"
+	DefaultEnvironment = "prod"
 	StagingGatewayURL = "https://api-staging.synapse-network.ai"
 	ProdGatewayURL    = "https://api.synapse-network.ai"
 )

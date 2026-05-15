@@ -8,10 +8,10 @@ namespace SynapseNetwork.Sdk.Tests;
 public sealed class SynapseClientTests
 {
     [Fact]
-    public void ResolvesGatewayUrlWithStagingDefaultAndExplicitOverride()
+    public void ResolvesGatewayUrlWithProdDefaultAndExplicitOverride()
     {
         Assert.Equal("https://gateway.example.com", SynapseClient.ResolveGatewayUrl(gatewayUrl: "https://gateway.example.com/"));
-        Assert.Equal(SynapseClient.StagingGatewayUrl, SynapseClient.ResolveGatewayUrl());
+        Assert.Equal(SynapseClient.ProdGatewayUrl, SynapseClient.ResolveGatewayUrl());
         Assert.Throws<ArgumentException>(() => SynapseClient.ResolveGatewayUrl(environment: "local"));
     }
 

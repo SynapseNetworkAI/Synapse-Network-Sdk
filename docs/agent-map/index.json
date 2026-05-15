@@ -60,7 +60,7 @@
       "notes": [
         "Canonical runtime flow is discovery/search plus one of two invoke modes: fixed-price invoke with costUsdc/cost_usdc, or token-metered LLM invoke with maxCostUsdc/max_cost_usdc.",
         "Public examples should use SYNAPSE_AGENT_KEY for agent runtime credentials; SYNAPSE_API_KEY is only a Python legacy fallback.",
-        "Public preview examples target staging on Arbitrum Sepolia with MockUSDC test assets.",
+        "Public examples target production by default; staging is sandbox/E2E only on Arbitrum Sepolia with MockUSDC test assets.",
         "Go, Java, and .NET now expose owner auth, credential, finance, provider lifecycle, and withdrawal helpers alongside the existing runtime client.",
         "Do not restore old quote-first gateway calls."
       ]
@@ -127,7 +127,7 @@
       "id": "sdk_environment_config",
       "title": "Gateway environment configuration",
       "use_when": [
-        "staging, future prod, gateway URL, environment resolver, or public preview defaults change",
+        "prod defaults, staging sandbox, gateway URL, environment resolver, or production defaults change",
         "README or SECURITY guidance for staging/prod changes"
       ],
       "primary_files": [
@@ -159,8 +159,8 @@
         "bash scripts/ci/dotnet_checks.sh"
       ],
       "notes": [
-        "Default environment is staging.",
-        "Public docs must describe staging as Arbitrum Sepolia plus MockUSDC until production docs are live.",
+        "Default environment is prod.",
+        "Public docs must describe production as the default and staging as sandbox/E2E only on Arbitrum Sepolia plus MockUSDC.",
         "Do not reintroduce removed non-staging gateway presets or gateway setup docs.",
         "Do not reintroduce the retired gateway domain from the old .network namespace.",
         "Explicit gateway URL always wins over environment preset."
@@ -172,7 +172,7 @@
       "use_when": [
         "README, integration guides, provider guides, capability inventory, or public examples change",
         "the product gateway docs need to stay aligned with the SDK repo",
-        "staging docs links or fresh-start onboarding flow changes"
+        "production docs links, staging sandbox links, or fresh-start onboarding flow changes"
       ],
       "primary_files": [
         "README.md",
@@ -201,7 +201,7 @@
         "bash scripts/ci/pr_checks.sh"
       ],
       "notes": [
-        "Public docs should say Public Preview unless production DNS and health checks are verified.",
+        "Public docs should say Production now that production DNS and health checks are verified.",
         "Use agt_xxx or REPLACE_ME placeholders only.",
         "README and gateway docs must show SYNAPSE_AGENT_KEY -> SynapseClient first, with owner auth -> JWT -> credential issuance under Advanced.",
         "README and gateway docs must explain fixed-price API invoke versus token-metered LLM invoke before advanced owner/provider flows.",
@@ -293,7 +293,7 @@
         "SYNAPSE_OWNER_PRIVATE_KEY=0x... SYNAPSE_AGENT_KEY=agt_xxx bash scripts/e2e/sdk_parity_e2e.sh --env staging --skip-install"
       ],
       "notes": [
-        "Provider staging examples require a public HTTPS endpoint reachable by the staging gateway.",
+        "Provider examples require a public HTTPS endpoint reachable by the selected gateway.",
         "Public SDK examples should pass discovered money values as strings and should not use float or Number conversions in quickstarts.",
         "Consumer wallet-to-invoke examples default to free services unless --allow-paid is explicit.",
         "E2E flows may require real staging credentials; PR CI should keep e2e out of the default gate unless explicitly configured."

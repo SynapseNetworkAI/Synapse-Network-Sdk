@@ -18,7 +18,7 @@ def main() -> None:
     client = SynapseClient(
         api_key=require_env("SYNAPSE_AGENT_KEY"),
         gateway_url=os.getenv("SYNAPSE_GATEWAY_URL") or None,
-        environment="staging",
+        environment=os.getenv("SYNAPSE_ENV", "prod"),
     )
     services = client.search(SYNAPSE_ECHO_SERVICE_ID, limit=10)
     service = next(

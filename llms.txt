@@ -8,21 +8,23 @@ This repository contains the official SynapseNetwork SDKs for TypeScript, Python
 
 - **Agent Key (`agt_xxx`)**: Runtime credential used by consumer agents to invoke services and pay.
 - **Service ID**: Unique identifier for a provider API.
-- **Staging URL**: `https://api-staging.synapse-network.ai`; staging is the default development environment.
-- **Staging Chain**: Arbitrum Sepolia testnet with MockUSDC. MockUSDC is for integration testing only and is not production USDC.
+- **Production URL**: `https://api.synapse-network.ai`; prod is the default SDK environment.
+- **Website**: `https://www.synapse-network.ai`.
+- **SDK Docs**: `https://docs.synapse-network.ai/sdks`.
+- **Staging Sandbox**: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC for gated E2E and integration rehearsals only.
 - **Money Rule**: Never recompute prices with floating-point math. Pass discovered prices and spend limits through exactly; use string amounts, for example `"0.05"`.
 
-## Staging Public Preview
+## Production Default
 
-Use staging for every public developer example until production launch. A correct staging integration has:
+Use production for public developer examples. A correct production integration has:
 
-1. `SYNAPSE_ENV=staging`
+1. `SYNAPSE_ENV=prod` or no `SYNAPSE_ENV`, because prod is the SDK default
 2. `SYNAPSE_AGENT_KEY=agt_xxx`
 3. Fixed-price API invoke with string `cost_usdc` / `costUsdc` from discovery
 4. Token-metered LLM invoke with optional string `max_cost_usdc` / `maxCostUsdc`
 5. Receipt verification after invocation
 
-Do not generate private local gateway setup instructions for public SDK users.
+Do not generate private local gateway setup instructions for public SDK users. Mention staging only as a sandbox/E2E target, not as the default quickstart path.
 
 ## Easiest Way: MCP Server
 
@@ -57,7 +59,7 @@ if (!agentKey) {
 
 const client = new SynapseClient({
   credential: agentKey,
-  environment: "staging",
+  environment: "prod",
 });
 
 // Fixed-price API invoke. costUsdc must match the discovered price.
@@ -96,7 +98,7 @@ agent_key = os.environ["SYNAPSE_AGENT_KEY"]
 
 client = SynapseClient(
     api_key=agent_key,
-    environment="staging",
+    environment="prod",
 )
 
 # Fixed-price API invoke. cost_usdc must match the discovered price.
@@ -154,7 +156,7 @@ bash scripts/ci/repo_hygiene_checks.sh
 bash scripts/ci/security_checks.sh
 ```
 
-Live parity E2E is gated and targets staging by default:
+Live parity E2E is gated and targets the staging sandbox by default:
 
 ```bash
 export SYNAPSE_OWNER_PRIVATE_KEY=0x...

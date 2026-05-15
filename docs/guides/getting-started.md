@@ -1,21 +1,24 @@
 # Getting Started
 
-Use this guide to test the SDK in the staging public preview.
+Use this guide to connect the SDK to production.
 
 ## Environment
 
-Staging is the only public preview integration path:
+Production is the default public integration path:
 
-- Gateway: `https://api-staging.synapse-network.ai`
-- Chain: Arbitrum Sepolia testnet
-- Asset: MockUSDC for integration testing, not production USDC
+- Website: `https://www.synapse-network.ai`
+- SDK docs: `https://docs.synapse-network.ai/sdks`
+- Gateway API: `https://api.synapse-network.ai`
+- Asset: production USDC settlement through SynapseNetwork
 
 Set:
 
 ```bash
-export SYNAPSE_ENV=staging
+export SYNAPSE_ENV=prod
 export SYNAPSE_AGENT_KEY=agt_xxx
 ```
+
+Staging remains available only as a sandbox/E2E target: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC.
 
 ## Choose an Integration Path
 

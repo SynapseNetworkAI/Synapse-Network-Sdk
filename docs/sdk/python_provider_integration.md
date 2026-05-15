@@ -42,7 +42,7 @@
 
 ## 3. 最小接入代码
 
-完整 staging 示例脚本：
+完整生产示例脚本：
 
 ```bash
 cd /Users/cliff/workspace/agent/Synapse-Network-Sdk/python
@@ -54,14 +54,14 @@ PYTHONPATH="$PWD" .venv/bin/python examples/provider_staging_onboarding.py \
   --price-usdc 0
 ```
 
-注意：staging gateway 必须能访问 provider endpoint，所以 `--endpoint-url` 应使用公网 HTTPS URL。
+注意：Synapse gateway 必须能访问 provider endpoint，所以 `--endpoint-url` 应使用公网 HTTPS URL。
 
 ```python
 from synapse_client import SynapseAuth
 
 auth = SynapseAuth.from_private_key(
     "0xYOUR_PROVIDER_PRIVATE_KEY",
-    environment="staging",
+    environment="prod",
 )
 
 jwt = auth.get_token()

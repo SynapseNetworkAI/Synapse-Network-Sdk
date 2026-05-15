@@ -75,15 +75,15 @@ This does not reintroduce a public local environment preset. The local target is
 
 By default the fixed-price path first selects the Synapse first-party smoke service `svc_synapse_echo`, then falls back to any free fixed-price API service. If staging has neither, set `SYNAPSE_E2E_FIXED_SERVICE_ID`, `SYNAPSE_E2E_FIXED_COST_USDC`, and `SYNAPSE_E2E_FIXED_PAYLOAD_JSON` explicitly.
 
-## Staging Docs
+## Production Docs
 
-The productized Gateway runbook lives in staging docs:
+The productized Gateway runbook lives in production docs:
 
-1. SDK Hub: https://staging.synapse-network.ai/docs/sdk
-2. Python SDK: https://staging.synapse-network.ai/docs/sdk/python
-3. TypeScript SDK: https://staging.synapse-network.ai/docs/sdk/typescript
+1. SDK Hub: https://docs.synapse-network.ai/sdks
+2. Website: https://www.synapse-network.ai
+3. Gateway API: https://api.synapse-network.ai
 
-Production docs are reserved until production DNS, `/health`, and docs deployment are verified.
+Staging remains available only as a sandbox/E2E target.
 
 ## Agent-First Onboarding Flow
 
@@ -112,19 +112,18 @@ Provider publishing is a separate owner-authenticated flow:
 
 ## Configuration Truth
 
-Default environment is public preview/staging:
+Default environment is production:
 
-- `staging`: `https://api-staging.synapse-network.ai`
-- Chain: Arbitrum Sepolia testnet
-- Asset: MockUSDC for integration testing, not production USDC
-
-Production launch will switch public examples and tests from `staging` to `prod`.
+- `prod`: `https://api.synapse-network.ai`
+- Website: `https://www.synapse-network.ai`
+- SDK docs: `https://docs.synapse-network.ai/sdks`
+- `staging`: `https://api-staging.synapse-network.ai`, sandbox only on Arbitrum Sepolia with MockUSDC
 
 Python:
 
 - `api_key`: explicit parameter first, then `SYNAPSE_AGENT_KEY`, then legacy `SYNAPSE_API_KEY`.
 - `gateway_url`: explicit parameter first, then `SYNAPSE_GATEWAY`.
-- `environment`: explicit parameter first, then `SYNAPSE_ENV`, then `staging`.
+- `environment`: explicit parameter first, then `SYNAPSE_ENV`, then `prod`.
 - `AgentWallet.connect()` no longer uses demo credential fallback; missing real credentials fail.
 
 TypeScript:

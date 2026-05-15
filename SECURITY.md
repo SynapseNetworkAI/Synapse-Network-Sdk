@@ -1,14 +1,14 @@
 # Security Policy
 
-## Public Preview Boundary
+## Production Boundary
 
-The SDK defaults to the Synapse public preview gateway:
+The SDK defaults to the Synapse production gateway:
 
 ```text
-https://api-staging.synapse-network.ai
+https://api.synapse-network.ai
 ```
 
-Staging is for test assets and integration trials. Production credentials, production private keys, and live-funds workflows must only be used after the official production gateway DNS and `/health` endpoint are verified.
+Production credentials, production private keys, and live-funds workflows should only target the verified production gateway. Staging remains available only for sandbox/E2E rehearsals at `https://api-staging.synapse-network.ai` with Arbitrum Sepolia and MockUSDC.
 
 ## Secrets
 

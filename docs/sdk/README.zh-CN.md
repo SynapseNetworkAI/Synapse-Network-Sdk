@@ -75,15 +75,15 @@ bash scripts/e2e/sdk_parity_e2e.sh --env local
 
 默认 fixed-price 路径会先选择 Synapse 第一方 smoke 服务 `svc_synapse_echo`，找不到时再 fallback 到免费的 fixed-price API 服务。如果 staging 两者都没有，需要显式设置 `SYNAPSE_E2E_FIXED_SERVICE_ID`、`SYNAPSE_E2E_FIXED_COST_USDC` 和 `SYNAPSE_E2E_FIXED_PAYLOAD_JSON`。
 
-## Staging 产品文档
+## Production 产品文档
 
-Gateway 的产品化 runbook 以 staging docs 为准：
+Gateway 的产品化 runbook 以生产 docs 为准：
 
-1. SDK Hub: https://staging.synapse-network.ai/docs/sdk
-2. Python SDK: https://staging.synapse-network.ai/docs/sdk/python
-3. TypeScript SDK: https://staging.synapse-network.ai/docs/sdk/typescript
+1. SDK Hub: https://docs.synapse-network.ai/sdks
+2. 官网: https://www.synapse-network.ai
+3. Gateway API: https://api.synapse-network.ai
 
-Production docs 先预留，等 production DNS、`/health` 和 docs deployment 验证后再作为主链路暴露。
+staging 只保留为 sandbox/E2E 目标。
 
 ## Agent-first 接入链路
 
@@ -112,19 +112,18 @@ Provider publishing 是另一条 owner-authenticated flow：
 
 ## 配置真相
 
-默认环境是 public preview/staging：
+默认环境是生产环境：
 
-- `staging`: `https://api-staging.synapse-network.ai`，用于 public preview、测试资产和接入试跑。
-- 链：Arbitrum Sepolia 测试网。
-- 资产：MockUSDC，用于接入测试，不是生产 USDC。
-
-生产环境上线后，再把公开示例和测试从 `staging` 统一切到 `prod`。
+- `prod`: `https://api.synapse-network.ai`
+- 官网：`https://www.synapse-network.ai`
+- SDK 文档：`https://docs.synapse-network.ai/sdks`
+- `staging`: `https://api-staging.synapse-network.ai`，仅作为 Arbitrum Sepolia + MockUSDC 的 sandbox/E2E 目标。
 
 Python：
 
 - `api_key`: 显式参数优先，其次 `SYNAPSE_AGENT_KEY`，最后是 legacy `SYNAPSE_API_KEY`。
 - `gateway_url`: 显式参数优先，其次 `SYNAPSE_GATEWAY`。
-- `environment`: 显式参数优先，其次 `SYNAPSE_ENV`，最后 `staging`。
+- `environment`: 显式参数优先，其次 `SYNAPSE_ENV`，最后 `prod`。
 - `AgentWallet.connect()` 不再使用 demo credential fallback；缺少真实 credential 会失败。
 
 TypeScript：

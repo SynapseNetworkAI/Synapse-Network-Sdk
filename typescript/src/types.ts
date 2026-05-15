@@ -3,7 +3,7 @@
 export type SynapseEnvironment = "staging" | "prod";
 
 export interface SynapseAuthOptions {
-  /** Gateway environment preset. Default: staging public preview. */
+  /** Gateway environment preset. Default: production. */
   environment?: SynapseEnvironment;
   /** Gateway base URL. Overrides environment when provided. */
   gatewayUrl?: string;
@@ -479,7 +479,7 @@ export interface InvocationResult {
 export interface SynapseClientOptions {
   /** Agent credential token (X-Credential header). Required. */
   credential: string;
-  /** Gateway environment preset. Default: staging public preview. */
+  /** Gateway environment preset. Default: production. */
   environment?: SynapseEnvironment;
   /** Gateway base URL. Overrides environment when provided. */
   gatewayUrl?: string;

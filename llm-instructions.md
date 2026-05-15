@@ -17,8 +17,9 @@ CRITICAL RULES FOR AI AGENTS:
 9. ALWAYS fetch and read the receipt after invocation to verify settlement.
 10. IF the user asks to publish/register/manage a provider API, initialize `SynapseAuth` and use `auth.provider()`.
 11. Provider setup is owner-scoped. Do not treat Provider as a separate root account.
-12. PUBLIC SDK EXAMPLES MUST TARGET STAGING: `SYNAPSE_ENV=staging`, Arbitrum Sepolia, and MockUSDC test assets.
+12. PUBLIC SDK EXAMPLES MUST TARGET PRODUCTION: `SYNAPSE_ENV=prod` or omit it because prod is the default, with Gateway API `https://api.synapse-network.ai`.
 13. DO NOT generate private local gateway onboarding instructions for public SDK users.
+14. Mention staging only as a sandbox/E2E target: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC.
 </system_prompt>
 
 <zh_rules>
@@ -34,8 +35,9 @@ AI Agent 中文规则：
 9. 调用后必须读取 receipt，确认结算状态。
 10. 如果用户要求发布、注册或管理 provider API，才初始化 `SynapseAuth` 并使用 `auth.provider()`。
 11. Provider 是 owner scope 下的角色，不是第二套根账户体系。
-12. 公开 SDK 示例必须指向 staging：`SYNAPSE_ENV=staging`、Arbitrum Sepolia 和 MockUSDC 测试资产。
+12. 公开 SDK 示例必须指向生产环境：`SYNAPSE_ENV=prod`，或省略该变量，因为 prod 是默认环境；Gateway API 是 `https://api.synapse-network.ai`。
 13. 不要为公开 SDK 用户生成私有本地 gateway 接入说明。
+14. staging 只能作为 sandbox/E2E 目标出现：`https://api-staging.synapse-network.ai`，Arbitrum Sepolia 和 MockUSDC。
 </zh_rules>
 
 Additional runtime preferences:
@@ -57,7 +59,7 @@ import os
 
 from synapse_client import SynapseClient
 
-client = SynapseClient(api_key=os.environ["SYNAPSE_AGENT_KEY"], environment="staging")
+client = SynapseClient(api_key=os.environ["SYNAPSE_AGENT_KEY"], environment="prod")
 services = client.search("free", limit=10)
 service = services[0]
 result = client.invoke(
@@ -79,7 +81,7 @@ import { SynapseClient } from "@synapse-network-ai/sdk";
 const agentKey = process.env.SYNAPSE_AGENT_KEY;
 if (!agentKey) throw new Error("SYNAPSE_AGENT_KEY is required");
 
-const client = new SynapseClient({ credential: agentKey, environment: "staging" });
+const client = new SynapseClient({ credential: agentKey, environment: "prod" });
 const services = await client.search("free", { limit: 10 });
 const service = services[0];
 const result = await client.invoke(
@@ -119,7 +121,7 @@ Provider 发布模式：
 ```python
 from synapse_client import SynapseAuth
 
-auth = SynapseAuth.from_private_key("0xOWNER_PRIVATE_KEY", environment="staging")
+auth = SynapseAuth.from_private_key("0xOWNER_PRIVATE_KEY", environment="prod")
 provider = auth.provider()
 service = provider.register_service(
     service_name="Weather API",
@@ -132,7 +134,7 @@ service = provider.register_service(
 ```ts
 import { SynapseAuth } from "@synapse-network-ai/sdk";
 
-const auth = SynapseAuth.fromWallet(wallet, { environment: "staging" });
+const auth = SynapseAuth.fromWallet(wallet, { environment: "prod" });
 const provider = auth.provider();
 const service = await provider.registerService({
   serviceName: "Weather API",

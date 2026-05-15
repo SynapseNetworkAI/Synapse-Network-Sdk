@@ -1,5 +1,5 @@
 import { AuthenticationError, InvokeError, SynapseClient } from "../src";
-import type { ServiceRecord } from "../src";
+import type { ServiceRecord, SynapseEnvironment } from "../src";
 
 export const SYNAPSE_ECHO_SERVICE_ID = "svc_synapse_echo";
 export const DEFAULT_FIXED_PAYLOAD: Record<string, unknown> = {
@@ -25,8 +25,15 @@ export function client(credential = requireEnv("SYNAPSE_AGENT_KEY")): SynapseCli
   return new SynapseClient({
     credential,
     gatewayUrl: gatewayUrl || undefined,
-    environment: gatewayUrl ? undefined : "staging",
+    environment: gatewayUrl ? undefined : envPreset(),
   });
+}
+
+function envPreset(): SynapseEnvironment {
+  const value = process.env.SYNAPSE_ENV?.trim();
+  if (!value) return "prod";
+  if (value === "prod" || value === "staging") return value;
+  throw new Error(`unsupported SYNAPSE_ENV: ${value}`);
 }
 
 export function requireEnv(name: string): string {

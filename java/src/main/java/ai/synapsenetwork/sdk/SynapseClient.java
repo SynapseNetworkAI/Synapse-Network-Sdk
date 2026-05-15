@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class SynapseClient {
-  public static final String DEFAULT_ENVIRONMENT = "staging";
+  public static final String DEFAULT_ENVIRONMENT = "prod";
   public static final String STAGING_GATEWAY_URL = "https://api-staging.synapse-network.ai";
   public static final String PROD_GATEWAY_URL = "https://api.synapse-network.ai";
 

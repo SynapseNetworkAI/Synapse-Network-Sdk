@@ -12,9 +12,19 @@ if grep -RInF --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv 
   exit 1
 fi
 
-echo "[ci:hygiene] checking public preview staging defaults"
+echo "[ci:hygiene] checking production defaults"
 grep -RIn --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv \
-  "https://api-staging.synapse-network.ai" README.md docs python/synapse_client typescript/src typescript/tests >/dev/null
+  "https://api.synapse-network.ai" README.md README.zh-CN.md docs llms.txt llm-instructions.md python/synapse_client typescript/src >/dev/null
+grep -RIn --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv \
+  "https://docs.synapse-network.ai/sdks" README.md README.zh-CN.md docs llms.txt >/dev/null
+grep -RIn --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv \
+  "https://www.synapse-network.ai" README.md README.zh-CN.md docs llms.txt >/dev/null
+if grep -RInE --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache \
+  '(Production docs are reserved|Production docs .*预留|production launch will switch|生产环境上线后，再把公开示例|Public Preview default|Public Preview 默认|staging\.synapse-network\.ai/docs)' \
+  README.md README.zh-CN.md docs llms.txt llm-instructions.md; then
+  echo "[ci:hygiene] stale staging-first or reserved-production docs detected" >&2
+  exit 1
+fi
 
 echo "[ci:hygiene] checking npm package scope"
 OLD_NPM_SCOPE="@synapse-network""/"
@@ -27,7 +37,7 @@ fi
 echo "[ci:hygiene] checking removed local gateway guidance"
 if grep -RInE --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache \
   '(127\.0\.0\.1:8000|localhost:8000|scripts/local|Hardhat)' README.md README.zh-CN.md docs python/synapse_client/test typescript/tests; then
-  echo "[ci:hygiene] local gateway guidance detected; public tests and docs must point to staging" >&2
+  echo "[ci:hygiene] local gateway guidance detected; public tests and docs must point to production or the staging sandbox" >&2
   exit 1
 fi
 if grep -RInE --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache \
@@ -36,7 +46,7 @@ if grep -RInE --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv 
   exit 1
 fi
 
-echo "[ci:hygiene] checking public SDK examples use staging agent credentials"
+echo "[ci:hygiene] checking public SDK examples use agent credentials"
 if grep -RInF --exclude-dir=.git --exclude-dir=__pycache__ --exclude-dir=.pytest_cache \
   "SYNAPSE_API_KEY" python/examples; then
   echo "[ci:hygiene] public examples must use SYNAPSE_AGENT_KEY, not SYNAPSE_API_KEY" >&2

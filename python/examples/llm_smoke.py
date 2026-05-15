@@ -12,7 +12,7 @@ def main() -> None:
     client = SynapseClient(
         api_key=require_env("SYNAPSE_AGENT_KEY"),
         gateway_url=os.getenv("SYNAPSE_GATEWAY_URL") or None,
-        environment="staging",
+        environment=os.getenv("SYNAPSE_ENV", "prod"),
     )
     service_id = os.getenv("SYNAPSE_E2E_LLM_SERVICE_ID", "svc_deepseek_chat")
     max_cost_usdc = os.getenv("SYNAPSE_E2E_LLM_MAX_COST_USDC", "0.010000")

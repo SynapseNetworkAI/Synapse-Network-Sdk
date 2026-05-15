@@ -1,6 +1,6 @@
 import type { SynapseEnvironment } from "./types";
 
-export const DEFAULT_ENVIRONMENT: SynapseEnvironment = "staging";
+export const DEFAULT_ENVIRONMENT: SynapseEnvironment = "prod";
 
 export const GATEWAY_URLS: Record<SynapseEnvironment, string> = {
   staging: "https://api-staging.synapse-network.ai",
