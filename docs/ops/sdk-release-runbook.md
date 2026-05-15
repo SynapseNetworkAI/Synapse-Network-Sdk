@@ -1,6 +1,6 @@
 # SDK Package Release Runbook
 
-- Status: Public Preview
+- Status: Production
 - Last verified against code: 2026-05-01
 
 This runbook covers SynapseNetwork SDK package publishing. SDKs are **published** to language registries; they are not deployed to staging or production runtime environments.
@@ -12,7 +12,7 @@ This runbook covers SynapseNetwork SDK package publishing. SDKs are **published*
 - New trains initialize all package versions to the train version.
 - A single language can hotfix forward, for example train `0.1.0` with Python package `0.1.1`.
 - Published package versions are immutable. Do not overwrite or republish the same version; publish a higher patch version instead.
-- SDK examples may default to `environment="staging"`, but package release channels are registry channels, not Gateway environments.
+- SDK examples default to `environment="prod"` or omit the environment because prod is the SDK default. Package release channels are registry channels, not Gateway environments.
 
 ## Package Platforms
 

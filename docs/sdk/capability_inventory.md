@@ -12,7 +12,7 @@ Consumer runtime is:
 4. token-metered LLM invoke through `invoke_llm()` / `invokeLlm()` with optional `max_cost_usdc` / `maxCostUsdc`
 5. `GET /api/v1/agent/invocations/{id}`
 
-Agent runtime examples use `SYNAPSE_AGENT_KEY=agt_xxx`. Python keeps `SYNAPSE_API_KEY` only as a legacy fallback. Public preview examples target staging on Arbitrum Sepolia with MockUSDC test assets.
+Agent runtime examples use `SYNAPSE_AGENT_KEY=agt_xxx`. Python keeps `SYNAPSE_API_KEY` only as a legacy fallback. Public examples target production by default. Staging remains a sandbox/E2E target on Arbitrum Sepolia with MockUSDC test assets.
 
 The old quote-first flow is not a current SDK main path. Python keeps deprecated compatibility methods that raise a clear error instead of calling removed endpoints.
 
@@ -141,7 +141,7 @@ Provider publishing is available through `auth.provider()` and existing `Synapse
 
 Supported:
 
-1. gateway URL resolution with explicit `gatewayURL` override and `staging` default
+1. gateway URL resolution with explicit `gatewayURL` override and `prod` default
 2. discovery/search
 3. fixed-price invoke with string `CostUSDC`
 4. token-metered LLM invoke with optional string `MaxCostUSDC`
@@ -157,7 +157,7 @@ Supported:
 
 Supported:
 
-1. gateway URL resolution with explicit `gatewayUrl` override and `staging` default
+1. gateway URL resolution with explicit `gatewayUrl` override and `prod` default
 2. discovery/search
 3. fixed-price invoke with string `costUsdc`
 4. token-metered LLM invoke with optional string `maxCostUsdc`
@@ -173,7 +173,7 @@ Supported:
 
 Supported:
 
-1. gateway URL resolution with explicit `GatewayUrl` override and `staging` default
+1. gateway URL resolution with explicit `GatewayUrl` override and `prod` default
 2. discovery/search
 3. fixed-price invoke with string `CostUsdc`
 4. token-metered LLM invoke with optional string `MaxCostUsdc`

@@ -10,7 +10,7 @@ GATEWAY_URLS: dict[SynapseEnvironment, str] = {
     "prod": "https://api.synapse-network.ai",
 }
 
-DEFAULT_ENVIRONMENT: SynapseEnvironment = "staging"
+DEFAULT_ENVIRONMENT: SynapseEnvironment = "prod"
 
 
 def resolve_gateway_url(

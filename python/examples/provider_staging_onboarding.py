@@ -14,7 +14,7 @@ from synapse_client.exceptions import AuthenticationError
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Register a provider service on the SynapseNetwork staging gateway.",
+        description="Register a provider service on the SynapseNetwork production gateway.",
     )
     parser.add_argument(
         "--provider-private-key",
@@ -23,8 +23,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--environment",
-        default=os.getenv("SYNAPSE_ENV", "staging").strip() or "staging",
-        help="Gateway environment preset. Defaults to staging.",
+        default=os.getenv("SYNAPSE_ENV", "prod").strip() or "prod",
+        help="Gateway environment preset. Defaults to prod.",
     )
     parser.add_argument(
         "--gateway-url",
@@ -34,7 +34,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--endpoint-url",
         required=True,
-        help="Public HTTPS provider invoke endpoint reachable by the staging gateway.",
+        help="Public HTTPS provider invoke endpoint reachable by the Synapse gateway.",
     )
     parser.add_argument(
         "--service-name",
@@ -49,7 +49,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--price-usdc",
         default="0",
-        help="Fixed service price in USDC. Defaults to 0 for staging smoke tests.",
+        help="Fixed service price in USDC. Defaults to 0 for smoke tests.",
     )
     parser.add_argument(
         "--provider-display-name",
@@ -81,7 +81,7 @@ def validate_args(args: argparse.Namespace) -> int:
     endpoint_url = args.endpoint_url.strip()
     if not endpoint_url.startswith("https://"):
         print(
-            "--endpoint-url must be a public HTTPS URL. The staging gateway cannot invoke localhost.",
+            "--endpoint-url must be a public HTTPS URL. The Synapse gateway cannot invoke localhost.",
             file=sys.stderr,
         )
         return 2
@@ -124,14 +124,14 @@ def main() -> int:
             description_for_model=args.description,
             provider_display_name=args.provider_display_name,
             tags=args.tags,
-            governance_note=f"sdk provider staging example {uuid4().hex[:8]}",
+            governance_note=f"sdk provider example {uuid4().hex[:8]}",
         )
         print(f"Registered service id: {registered.service_id}")
         print_json("Registered service", registered.model_dump(by_alias=True, exclude_none=True))
 
         status = provider.get_service_status(registered.service_id)
         print_json("Provider service status", status.model_dump(by_alias=True, exclude_none=True))
-        print("Provider staging onboarding completed.")
+        print("Provider onboarding completed.")
         return 0
     except AuthenticationError as exc:
         print(f"Authentication failed: {exc}", file=sys.stderr)

@@ -26,7 +26,7 @@ import (
 func main() {
     client, err := synapse.NewClient(synapse.Options{
         Credential:  os.Getenv("SYNAPSE_AGENT_KEY"),
-        Environment: "staging",
+        Environment: "prod",
     })
     if err != nil {
         panic(err)
@@ -73,7 +73,7 @@ Use owner auth only in backend or operator tooling. Agent runtime code should ke
 
 ```go
 auth, err := synapse.NewAuthFromPrivateKey(os.Getenv("SYNAPSE_OWNER_PRIVATE_KEY"), synapse.AuthOptions{
-    Environment: "staging",
+    Environment: "prod",
 })
 if err != nil {
     panic(err)

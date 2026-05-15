@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 
 final class SynapseClientTest {
   @Test
-  void resolvesGatewayUrlWithStagingDefaultAndExplicitOverride() {
+  void resolvesGatewayUrlWithProdDefaultAndExplicitOverride() {
     assertEquals(
         "https://gateway.example.com",
         SynapseClient.resolveGatewayUrl("staging", "https://gateway.example.com/"));
-    assertEquals(SynapseClient.STAGING_GATEWAY_URL, SynapseClient.resolveGatewayUrl(null, null));
+    assertEquals(SynapseClient.PROD_GATEWAY_URL, SynapseClient.resolveGatewayUrl(null, null));
     assertThrows(IllegalArgumentException.class, () -> SynapseClient.resolveGatewayUrl("local", null));
   }
 

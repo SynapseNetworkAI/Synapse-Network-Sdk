@@ -26,8 +26,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--environment",
-        default=os.getenv("SYNAPSE_ENV", "staging").strip() or "staging",
-        help="Gateway environment preset. Defaults to staging.",
+        default=os.getenv("SYNAPSE_ENV", "prod").strip() or "prod",
+        help="Gateway environment preset. Defaults to prod.",
     )
     parser.add_argument(
         "--gateway-url",

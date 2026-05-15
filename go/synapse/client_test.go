@@ -17,8 +17,8 @@ func TestResolveGatewayURL(t *testing.T) {
 		t.Fatalf("explicit gateway url should win, got=%q err=%v", got, err)
 	}
 	got, err = ResolveGatewayURL("", "")
-	if err != nil || got != StagingGatewayURL {
-		t.Fatalf("default environment should be staging, got=%q err=%v", got, err)
+	if err != nil || got != ProdGatewayURL {
+		t.Fatalf("default environment should be prod, got=%q err=%v", got, err)
 	}
 	if _, err = ResolveGatewayURL("local", ""); err == nil {
 		t.Fatal("unsupported environment should fail")

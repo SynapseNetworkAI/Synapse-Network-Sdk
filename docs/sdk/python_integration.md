@@ -15,12 +15,11 @@ Consumer runtime 主链固定为：
 
 旧的 quote-first 方法 `create_quote()`、`create_invocation()`、`invoke_service()` 已废弃，不再访问旧 endpoint。调用这些方法会直接提示改用 discovery/search + price-asserted invoke。
 
-Staging 产品化 runbook:
+Production 产品化 runbook:
 
-1. https://staging.synapse-network.ai/docs/sdk/python
-2. SDK Hub: https://staging.synapse-network.ai/docs/sdk
-
-Production docs 先预留，等 production DNS、`/health` 和 docs deployment 验证后再作为主链路暴露。
+1. SDK Hub: https://docs.synapse-network.ai/sdks
+2. Website: https://www.synapse-network.ai
+3. Gateway API: https://api.synapse-network.ai
 
 ## 安装
 
@@ -48,15 +47,14 @@ python -m pip install -e ".[dev]"
 
 1. `environment` 显式参数
 2. `SYNAPSE_ENV`
-3. `staging`
+3. `prod`
 
 环境 preset：
 
-1. `staging`: `https://api-staging.synapse-network.ai`
+1. `prod`: `https://api.synapse-network.ai`
+2. `staging`: `https://api-staging.synapse-network.ai`，仅用于 sandbox/E2E
 
-当前 staging 使用 Arbitrum Sepolia 测试网和 MockUSDC 测试资产。MockUSDC 只用于接入验证，不是生产 USDC。
-
-生产环境上线后，公开示例和测试再统一切换到 `prod`。
+生产默认使用真实 Gateway API。staging 使用 Arbitrum Sepolia 和 MockUSDC，仅用于 sandbox/E2E。
 
 `AgentWallet.connect()` 不再使用 `demo_key` fallback。没有真实 credential 时会失败。
 
@@ -73,12 +71,12 @@ Fresh setup 不应从硬编码 credential 开始。`SYNAPSE_AGENT_KEY` 是 owner
 
 如果 owner wallet 还没有余额，可以先选择 `price_usdc == 0` 的免费服务做 smoke path；`price_usdc > 0` 的服务需要先有可用余额、credits 或足够的 credential credit limit。
 
-Staging 接入建议先完成：
+生产接入建议先完成：
 
-1. `SYNAPSE_ENV=staging`
+1. `SYNAPSE_ENV=prod`，或省略该变量
 2. `SYNAPSE_AGENT_KEY=agt_xxx`
 3. 免费 fixed-price API invoke
-4. MockUSDC 余额准备后的付费 fixed-price API invoke
+4. 账户余额和 credential budget 准备后的付费 fixed-price API invoke
 5. token-metered LLM invoke
 6. receipt 查询和结算字段核对
 
@@ -89,7 +87,7 @@ from synapse_client import SynapseAuth
 
 auth = SynapseAuth.from_private_key(
     "0xYOUR_PRIVATE_KEY",
-    environment="staging",
+    environment="prod",
 )
 
 jwt = auth.get_token()
@@ -124,7 +122,7 @@ from synapse_client import SynapseClient
 
 client = SynapseClient(
     api_key=issued.token,
-    environment="staging",
+    environment="prod",
 )
 
 services = client.search("market data", limit=20, tags=["finance"])
@@ -177,9 +175,9 @@ print(result.synapse.charged_usdc, result.synapse.released_usdc)
 1. `free_service_smoke.py`：优先调用第一方 `svc_synapse_echo`，找不到时搜索免费 fixed-price API service、invoke、读取 receipt。
 2. `llm_smoke.py`：调用 token-metered LLM，不发送 fixed-price cost。
 3. `e2e.py`：完整真实 Gateway 验证并输出 JSON lines。
-4. `provider_staging_onboarding.py`：使用 `SynapseAuth` + `auth.provider()` 在 staging 注册 provider service。
+4. `provider_staging_onboarding.py`：使用 `SynapseAuth` + `auth.provider()` 注册 provider service。
 5. `consumer_call_provider.py`：使用已有 `SYNAPSE_AGENT_KEY=agt_xxx` 调用 provider service。
-6. `consumer_wallet_to_invoke.py`：创建新的 staging wallet，签发 credential，再调用免费服务。
+6. `consumer_wallet_to_invoke.py`：创建新的 wallet，签发 credential，再调用免费服务。
 
 示例命令：
 

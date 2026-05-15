@@ -85,11 +85,11 @@ def test_client_uses_synapse_gateway_env(monkeypatch):
     assert client.gateway_url == "https://gateway.example"
 
 
-def test_resolve_gateway_url_defaults_to_staging(monkeypatch):
+def test_resolve_gateway_url_defaults_to_prod(monkeypatch):
     monkeypatch.delenv("SYNAPSE_GATEWAY", raising=False)
     monkeypatch.delenv("SYNAPSE_ENV", raising=False)
 
-    assert resolve_gateway_url() == "https://api-staging.synapse-network.ai"
+    assert resolve_gateway_url() == "https://api.synapse-network.ai"
 
 
 def test_resolve_gateway_url_supports_presets_and_explicit_override(monkeypatch):

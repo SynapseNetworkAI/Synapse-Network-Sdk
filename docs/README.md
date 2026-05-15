@@ -10,15 +10,16 @@ This directory is the public documentation source for the SynapseNetwork SDK rep
 4. [Quality Gates](./quality-gates.md)
 5. [Agent Map](./agent-map/README.md)
 
-## Public Preview Environment
+## Production Environment
 
-Public developer onboarding uses staging:
+Public developer onboarding uses production:
 
-- Gateway: `https://api-staging.synapse-network.ai`
-- Chain: Arbitrum Sepolia testnet
-- Asset: MockUSDC for integration testing, not production USDC
+- Website: `https://www.synapse-network.ai`
+- SDK docs: `https://docs.synapse-network.ai/sdks`
+- Gateway API: `https://api.synapse-network.ai`
+- Asset: production USDC settlement through SynapseNetwork
 
-Production docs and examples will be switched after production DNS, gateway health, contracts, and docs deployment are verified.
+Staging remains a sandbox for gated E2E and integration rehearsals only: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC.
 
 ## Contributor Notes
 

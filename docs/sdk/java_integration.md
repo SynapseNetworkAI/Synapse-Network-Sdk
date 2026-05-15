@@ -21,7 +21,7 @@ import ai.synapsenetwork.sdk.SynapseClient;
 import java.util.Map;
 
 SynapseClient client = new SynapseClient(
-    SynapseClient.options(System.getenv("SYNAPSE_AGENT_KEY")).environment("staging"));
+    SynapseClient.options(System.getenv("SYNAPSE_AGENT_KEY")).environment("prod"));
 
 var services = client.search("svc_synapse_echo", new SynapseClient.SearchOptions());
 var service = services.get(0);
@@ -56,7 +56,7 @@ Use owner auth only in backend or operator tooling. Agent runtime code should ke
 
 ```java
 SynapseAuth.Options authOptions = new SynapseAuth.Options();
-authOptions.environment = "staging";
+authOptions.environment = "prod";
 
 SynapseAuth auth = SynapseAuth.fromPrivateKey(
     System.getenv("SYNAPSE_OWNER_PRIVATE_KEY"),

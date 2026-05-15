@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--environment",
         default=os.getenv("SYNAPSE_ENV", "").strip(),
-        help="Gateway environment preset. Defaults to staging.",
+        help="Gateway environment preset. Defaults to prod.",
     )
     parser.add_argument(
         "--query",

@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
-export SYNAPSE_ENV=staging
+export SYNAPSE_ENV=prod
 unset SYNAPSE_GATEWAY
 
 PYTHON_BIN="${PYTHON_BIN:-python}"

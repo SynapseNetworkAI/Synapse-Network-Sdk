@@ -1,6 +1,6 @@
 # SDK Python Staging Development
 
-`python/` 是 SynapseNetwork 的官方 Python SDK 分发与联调目录。当前所有公开验证都指向 staging；生产环境上线后再统一切换到 prod。
+`python/` 是 SynapseNetwork 的官方 Python SDK 分发与联调目录。公开 quickstart 默认指向 prod；本文只记录 staging sandbox 的专项联调方式。
 
 ## 安装
 

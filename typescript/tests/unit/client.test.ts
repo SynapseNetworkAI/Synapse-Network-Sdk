@@ -54,8 +54,8 @@ test("constructor accepts default gatewayUrl", () => {
   expect(client).toBeInstanceOf(SynapseClient);
 });
 
-test("resolveGatewayUrl defaults to staging public preview", () => {
-  expect(resolveGatewayUrl()).toBe("https://api-staging.synapse-network.ai");
+test("resolveGatewayUrl defaults to production", () => {
+  expect(resolveGatewayUrl()).toBe("https://api.synapse-network.ai");
 });
 
 test("resolveGatewayUrl supports presets and explicit override", () => {
@@ -74,7 +74,7 @@ test("resolveGatewayUrl rejects removed local environment preset", () => {
   expect(() => resolveGatewayUrl({ environment: "local" as never })).toThrow("unsupported Synapse environment");
 });
 
-test("SynapseAuth defaults to staging gateway", async () => {
+test("SynapseAuth defaults to production gateway", async () => {
   const urls: string[] = [];
   (globalThis as unknown as Record<string, unknown>).fetch = jest.fn(async (url: string) => {
     urls.push(url);
@@ -96,7 +96,7 @@ test("SynapseAuth defaults to staging gateway", async () => {
   });
 
   await auth.getToken();
-  expect(urls[0]).toContain("https://api-staging.synapse-network.ai/api/v1/auth/challenge");
+  expect(urls[0]).toContain("https://api.synapse-network.ai/api/v1/auth/challenge");
 });
 
 // ── invoke() — single-call path ───────────────────────────────────────────────
