@@ -7,7 +7,7 @@
 发布包安装：
 
 ```bash
-pip install synapse-client
+pip install synapse-network-ai-sdk
 ```
 
 开发安装：

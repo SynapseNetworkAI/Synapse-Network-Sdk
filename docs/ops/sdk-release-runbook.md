@@ -18,7 +18,7 @@ This runbook covers SynapseNetwork SDK package publishing. SDKs are **published*
 
 | Language | Package | Registry | Publish notes |
 | --- | --- | --- | --- |
-| Python | `synapse-client` | PyPI | Optional TestPyPI dry-run before public release. |
+| Python | `synapse-network-ai-sdk` | PyPI | Optional TestPyPI dry-run before public release. |
 | TypeScript | `@synapse-network-ai/sdk` | npm | Use npm dist-tags such as `preview`, `next`, or `latest`. |
 | Go | `github.com/SynapseNetworkAI/Synapse-Network-Sdk/go` | Go module via GitHub | Because the module is in `/go`, tags must use `go/vX.Y.Z`. |
 | Java | `ai.synapsenetwork:synapse-network-sdk` | Maven Central | If Central is not ready, publish preview artifacts to GitHub Packages Maven. |

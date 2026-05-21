@@ -146,7 +146,7 @@ bash scripts/e2e/sdk_parity_e2e.sh --env staging --skip-install
 步骤 2：让 Agent 自动发现服务并开始工作。
 
 ```bash
-pip install synapse-client
+pip install synapse-network-ai-sdk
 export SYNAPSE_ENV=prod
 export SYNAPSE_AGENT_KEY=agt_xxx
 ```

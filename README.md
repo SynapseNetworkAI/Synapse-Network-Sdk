@@ -149,7 +149,7 @@ Step 1: get your Agent Key from the Synapse Gateway Dashboard.
 Step 2: let your agent discover and work.
 
 ```bash
-pip install synapse-client
+pip install synapse-network-ai-sdk
 export SYNAPSE_ENV=prod
 export SYNAPSE_AGENT_KEY=agt_xxx
 ```
