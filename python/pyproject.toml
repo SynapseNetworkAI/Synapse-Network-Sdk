@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "synapse-client"
+name = "synapse-network-ai-sdk"
 version = "1.0.0"
 description = "Official Synapse Network Client SDK for Service Discovery and Invocation"
 readme = "README.md"
