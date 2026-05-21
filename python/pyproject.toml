@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "synapse-client"
-version = "0.1.0"
+version = "1.0.0"
 description = "Official Synapse Network Client SDK for Service Discovery and Invocation"
 readme = "README.md"
 requires-python = ">=3.9"
