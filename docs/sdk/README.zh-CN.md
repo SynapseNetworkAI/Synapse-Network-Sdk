@@ -2,191 +2,78 @@
   <a href="./README.md">English</a> · <strong>简体中文</strong>
 </p>
 
-# Synapse SDK 文档 Hub
+# SynapseNetwork SDK 中心
 
-本目录是 SDK 侧的真实能力入口，覆盖能力清单、接入指南、provider onboarding 与测试计划。
+SynapseNetwork SDK 帮助 Agent 发现服务、调用付费 API，并读取可审计的调用回执。
 
-## 文档入口
+## 安装
 
-1. [SDK Capability Inventory](./capability_inventory.md)
-2. [SDK/API Parity Matrix](./api-parity-matrix.md)
-3. [Agent Map](../agent-map/README.md)
-4. [Agent Map JSON](../agent-map/index.json)
-5. [TypeScript Integration Guide](./typescript_integration.md)
-6. [TypeScript Provider Integration Guide](./typescript_provider_integration.md)
-7. [Python Integration Guide](./python_integration.md)
-8. [Python Provider Integration Guide](./python_provider_integration.md)
-9. [Go Integration Guide](./go_integration.md)
-10. [Java/JVM Integration Guide](./java_integration.md)
-11. [.NET Integration Guide](./dotnet_integration.md)
-12. [SDK Parity E2E](#sdk-parity-e2e)
-13. [Python Staging Development](../ops/SDK_Python_Staging_Development.md)
-14. [TypeScript Consumer E2E Plan](../test/consumer-e2e-plan.md)
-15. [TypeScript Provider Onboarding E2E Plan](../test/typescript-provider-onboarding-e2e-plan.md)
-16. [Python Consumer Cold-Start E2E Plan](../test/python-consumer-cold-start-e2e-plan.md)
-17. [Python Provider Onboarding E2E Plan](../test/python-provider-onboarding-e2e-plan.md)
+| 语言 | 安装 | 文档 |
+| --- | --- | --- |
+| Python | `pip install synapse-network-ai-sdk` | [Python 接入](./python_integration.md) |
+| TypeScript | `npm install @synapse-network-ai/sdk` | [TypeScript 接入](./typescript_integration.md) |
+| Go | `go get github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@latest` | [Go 接入](./go_integration.md) |
+| Java | `ai.synapse-network:synapse-network-sdk` | [Java 接入](./java_integration.md) |
+| .NET | `dotnet add package SynapseNetwork.Sdk` | [.NET 接入](./dotnet_integration.md) |
 
-## 当前结论
+## 第一次调用
 
-SDK 当前有三个明确的公开入口：
+1. 在 SynapseNetwork 控制台创建 Agent Key。
+2. 将 Agent Key 传给 SDK。
+3. 搜索一个服务。
+4. 使用发现结果里的最新价格调用服务。
+5. 读取调用回执和扣费信息。
 
-1. `SynapseClient`：Agent runtime quickstart。已有 `agt_xxx` 后，直接 discovery/search -> invoke -> receipt。
-2. `SynapseAuth`：Owner control plane，用于 wallet auth、credential issuance、key rotation 和 owner finance helper。
-3. `SynapseProvider`：通过 `auth.provider()` 获取的 provider publishing facade，用于 provider secret、service registration、lifecycle、health、earnings 和 withdrawal helper。
+```python
+from synapse_client import SynapseClient
 
-Provider 仍然是 owner scope 下的供给侧角色。`SynapseProvider` 只是让 provider 接入更容易发现，不引入第二套 provider root 身份。
+client = SynapseClient(api_key="agt_xxx")
+service = client.search("invoice extraction", limit=5)[0]
 
-Go、Java/JVM 和 .NET 现在与 Python、TypeScript 覆盖同一组公开能力：`SynapseClient` agent runtime、`SynapseAuth` owner wallet auth、credential 管理、balance/deposit helper、usage/finance 读取，以及 `SynapseProvider` provider publishing/withdrawal helper。
+result = client.invoke(
+    service.service_id,
+    {"invoice_url": "https://example.com/invoice.pdf"},
+    cost_usdc=str(service.price_usdc),
+    idempotency_key="invoice-job-001",
+)
 
-Owner/provider helper 的返回值必须是命名 SDK 对象。不要新增或记录返回 raw Python `dict`、TypeScript `Record<string, unknown>`、Go `map[string]any`、Java `JsonNode`/`Map` 或 .NET `JsonElement`/`Dictionary` 作为顶层结果的公开 `SynapseAuth` / `SynapseProvider` 方法；应先新增命名 result model/interface/struct/record。
-
-Python 旧的 quote-first 方法 `create_quote()`、`create_invocation()`、`invoke_service()` 已经废弃。它们不会再访问旧 endpoint，而是直接提示普通 fixed-price API 改用 discovery/search + `invoke(..., cost_usdc=...)`。
-
-LLM 服务使用 `serviceKind=llm` + `priceModel=token_metered`。Runtime 代码应调用 `invoke_llm()` / `invokeLlm()`，并读取返回里的 `usage` 与 `synapse` 计费元数据。LLM 调用不要传 `cost_usdc` / `costUsdc`；可以传可选的 `max_cost_usdc` / `maxCostUsdc`，也可以交给 Gateway 自动冻结。V1 禁用 streaming。
-
-Consumer 文档应统一呈现两种调用模式：
-
-| 模式 | SDK 方法 | 费用输入 |
-|---|---|---|
-| Fixed-price API | Python/TypeScript `invoke()`、Go `Invoke()`、Java `invoke()`、.NET `InvokeAsync()` | 最新 discovery price，使用字符串金额 |
-| Token-metered LLM | Python `invoke_llm()`、TypeScript `invokeLlm()`、Go `InvokeLLM()`、Java `invokeLlm()`、.NET `InvokeLlmAsync()` | 可选上限，使用字符串金额；不要发送 fixed-price cost |
-
-## SDK Parity E2E
-
-五种 SDK 共用的真实 Gateway E2E 入口是：
-
-```bash
-export SYNAPSE_OWNER_PRIVATE_KEY='0x...'
-export SYNAPSE_AGENT_KEY='agt_xxx_your_real_key'
-bash scripts/e2e/sdk_parity_e2e.sh --env staging
+receipt = client.get_invocation(result.invocation_id)
+print(receipt.status, receipt.charged_usdc)
 ```
 
-脚本会先通过每个选中的 SDK 验证 owner login、credential issue、balance、usage logs 和 provider registration guide，再运行共享 runtime E2E：health、discovery、fixed-price invoke、receipt lookup、token-metered LLM invoke、参数校验失败，以及 invalid credential 负向路径。
+## SDK 能做什么
 
-私有 gateway 测试目标使用：
+- 搜索 SynapseNetwork 上的可调用服务。
+- 使用价格断言调用 fixed-price API。
+- 调用按 token 计费的 LLM 服务。
+- 读取调用回执、扣费金额和结算状态。
+- 在需要发布 API 时，通过 provider facade 注册服务。
 
-```bash
-export SYNAPSE_OWNER_PRIVATE_KEY='0x...'
-export SYNAPSE_GATEWAY_URL='https://your-private-gateway.example.com'
-bash scripts/e2e/sdk_parity_e2e.sh --env local
+## Consumer 与 Provider
+
+| 角色 | 入口 | 用途 |
+| --- | --- | --- |
+| 调用 API 的 Agent 或应用 | `SynapseClient` | 搜索、调用、读取回执。 |
+| 发布 API 的 Provider | `SynapseAuth` + `auth.provider()` | 注册服务、管理 provider secret、查看健康状态。 |
+
+绝大多数接入第一天只需要 `SynapseClient`。Provider 发布是第二入口。
+
+## 公共链接
+
+- 官网: [www.synapse-network.ai](https://www.synapse-network.ai)
+- SDK 源码: [github.com/SynapseNetworkAI/Synapse-Network-Sdk](https://github.com/SynapseNetworkAI/Synapse-Network-Sdk)
+- Python: [PyPI](https://pypi.org/project/synapse-network-ai-sdk/)
+- TypeScript: [npm](https://www.npmjs.com/package/@synapse-network-ai/sdk)
+- Go: [pkg.go.dev](https://pkg.go.dev/github.com/SynapseNetworkAI/Synapse-Network-Sdk/go)
+- Java: [Maven Central](https://repo1.maven.org/maven2/ai/synapse-network/synapse-network-sdk/)
+- .NET: [NuGet](https://www.nuget.org/packages/SynapseNetwork.Sdk)
+
+## 环境
+
+公开 SDK 默认使用生产 API：
+
+```text
+https://api.synapse-network.ai
 ```
 
-这不会恢复公开的 local environment preset；local 只是测试自动化里的显式 URL override。缺少本地工具链时可自动安装；.NET 会按项目 baseline 安装 SDK 8.0 到 `$HOME/.synapse-network-sdk-e2e/dotnet`。
-
-默认 fixed-price 路径会先选择 Synapse 第一方 smoke 服务 `svc_synapse_echo`，找不到时再 fallback 到免费的 fixed-price API 服务。如果 staging 两者都没有，需要显式设置 `SYNAPSE_E2E_FIXED_SERVICE_ID`、`SYNAPSE_E2E_FIXED_COST_USDC` 和 `SYNAPSE_E2E_FIXED_PAYLOAD_JSON`。
-
-## Production 产品文档
-
-Gateway 的产品化 runbook 以生产 docs 为准：
-
-1. SDK Hub: https://docs.synapse-network.ai/sdks
-2. 官网: https://www.synapse-network.ai
-3. Gateway API: https://api.synapse-network.ai
-
-staging 只保留为 sandbox/E2E 目标。
-
-## Agent-first 接入链路
-
-README 顶部优先展示 TTFC 最短路径：
-
-1. Gateway Dashboard 连接钱包。
-2. Generate Agent Key。
-3. agent runtime 使用 `SynapseClient` 执行 discovery / invoke / receipt。
-
-Programmatic credential issuance 属于 Advanced owner flow：
-
-1. owner wallet 签名登录。
-2. gateway 返回 JWT。
-3. 读取 balance / credits。
-4. owner 签发 agent credential。
-
-如果 owner wallet 还没有余额，优先选择 `price_usdc == 0` 的免费服务做 smoke path。付费服务需要 owner balance、credits 或 credential credit limit 足够覆盖本次调用。
-
-Provider publishing 是另一条 owner-authenticated flow：
-
-1. Owner wallet 通过 `SynapseAuth` 登录。
-2. 代码调用 `provider = auth.provider()`。
-3. Provider 按需签发 provider secret。
-4. Provider 注册或更新 service manifest。
-5. Provider 通过同一个 facade 查询 service status、health history、earnings 和 withdrawals。
-
-## 配置真相
-
-默认环境是生产环境：
-
-- `prod`: `https://api.synapse-network.ai`
-- 官网：`https://www.synapse-network.ai`
-- SDK 文档：`https://docs.synapse-network.ai/sdks`
-- `staging`: `https://api-staging.synapse-network.ai`，仅作为 Arbitrum Sepolia + MockUSDC 的 sandbox/E2E 目标。
-
-Python：
-
-- `api_key`: 显式参数优先，其次 `SYNAPSE_AGENT_KEY`，最后是 legacy `SYNAPSE_API_KEY`。
-- `gateway_url`: 显式参数优先，其次 `SYNAPSE_GATEWAY`。
-- `environment`: 显式参数优先，其次 `SYNAPSE_ENV`，最后 `prod`。
-- `AgentWallet.connect()` 不再使用 demo credential fallback；缺少真实 credential 会失败。
-
-TypeScript：
-
-- SDK 构造函数以显式 `credential` / `gatewayUrl` / `environment` 为准。
-- 应用层可以读取环境变量后传入 SDK。
-- SDK 本身不隐式依赖 Node 环境变量，方便浏览器和 Node 共用。
-
-## 幂等与重试
-
-运行时调用建议固定传：
-
-1. `request_id` / request header，用于串联 gateway 日志。
-2. `idempotency_key` / `idempotencyKey`，用于避免重复扣费或重复执行。
-3. 普通 fixed-price API 传 `cost_usdc` / `costUsdc`，来自最新 discovery price。Smoke examples 默认调用免费的第一方 `svc_synapse_echo`，它会原样返回 JSON object payload。若价格变化，gateway 会拒绝本次调用，调用方应重新 discovery。
-4. 按 token 计费的 LLM 服务调用 `invoke_llm()` / `invokeLlm()`，可选传 `max_cost_usdc` / `maxCostUsdc`；最终按 Provider 返回的 `usage` 精准扣费。
-
-## 常见故障
-
-### `api_key is required`
-
-没有传 `api_key`，也没有设置 `SYNAPSE_AGENT_KEY`。新用户应先签发 agent credential，再把返回的 token 交给 `SynapseClient`。`SYNAPSE_API_KEY` 仅作为旧 Python 用户的 legacy fallback 保留，新文档和示例统一使用 `SYNAPSE_AGENT_KEY`。
-
-```bash
-export SYNAPSE_AGENT_KEY='agt_xxx_your_real_key'
-```
-
-### Discovery 返回 0 个结果
-
-通常不是 SDK 坏了，而是当前 gateway 没有 discoverable 服务。
-
-优先检查：
-
-1. provider service 是否 `active`。
-2. target 是否健康。
-3. discovery `query` / `tags` 是否匹配。
-4. provider onboarding 是否已进入 owner `/api/v1/services`。
-
-### `402` 或预算相关异常
-
-SDK 会把 `402` 映射到余额、预算或 credential credit limit 相关异常。此时应检查账户余额、credential budget、daily cap，而不是盲目重试 SDK。
-
-## 最短验证路径
-
-```bash
-cd /Users/cliff/workspace/agent/Synapse-Network-Sdk/python
-PYTHONPATH="$PWD" .venv/bin/python -m pytest synapse_client/test/test_client_unit.py -q
-export SYNAPSE_AGENT_KEY='agt_xxx_your_real_key'
-PYTHONPATH="$PWD" .venv/bin/python examples/smoke_test.py --query '名人名言'
-```
-
-```bash
-cd /Users/cliff/workspace/agent/Synapse-Network-Sdk/typescript
-npm run test:unit
-```
-
-每个 SDK 都有 runnable examples：
-
-```bash
-export SYNAPSE_AGENT_KEY='agt_xxx_your_real_key'
-PYTHONPATH=python python3 python/examples/free_service_smoke.py
-npm run example:free --prefix typescript
-go -C go run ./examples/free_service_smoke
-mvn -q -f java/examples/pom.xml exec:java -Dexec.mainClass=ai.synapsenetwork.sdk.examples.FreeServiceSmoke
-dotnet run --project dotnet/examples/free-service-smoke/free-service-smoke.csproj
-```
+只有在接入私有部署或明确的测试沙箱时，才需要显式覆盖 gateway URL。

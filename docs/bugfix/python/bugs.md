@@ -1,5 +1,7 @@
 # Python SDK Bug Log
 
+> Internal operator-only bugfix log. This file is kept for engineering traceability and must not be linked from public package README files, registry pages, or the public SDK hub.
+
 ## BUG-PY-001 — 缺少 owner wallet auth / deposit / credential 管理入口
 
 **Status:** FIXED  

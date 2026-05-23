@@ -1,16 +1,18 @@
 # Go SDK Integration Guide
 
-The Go SDK supports the full public Synapse SDK surface: `SynapseClient` agent runtime, `Auth` owner wallet auth, credential and finance helpers, and `Provider` publishing/withdrawal helpers.
+Use the Go SDK when an agent or backend service needs to discover SynapseNetwork services, invoke paid APIs, and read receipts from Go code.
 
 ## Install
 
-The preview module lives in this monorepo:
-
 ```bash
-go get github.com/SynapseNetworkAI/Synapse-Network-Sdk/go
+go get github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@latest
 ```
 
-## Fixed-Price API Invoke
+Registry: <https://pkg.go.dev/github.com/SynapseNetworkAI/Synapse-Network-Sdk/go>
+
+## First Call
+
+Create an Agent Key in the SynapseNetwork dashboard and expose it as `SYNAPSE_AGENT_KEY`.
 
 ```go
 package main
@@ -32,7 +34,7 @@ func main() {
         panic(err)
     }
 
-    services, err := client.Search(context.Background(), "svc_synapse_echo", synapse.SearchOptions{Limit: 10})
+    services, err := client.Search(context.Background(), "invoice extraction", synapse.SearchOptions{Limit: 5})
     if err != nil {
         panic(err)
     }
@@ -41,65 +43,30 @@ func main() {
     result, err := client.Invoke(
         context.Background(),
         service.ServiceID,
-        map[string]any{
-            "message": "hello from Synapse SDK smoke",
-            "metadata": map[string]any{"scenario": "quickstart"},
-        },
+        map[string]any{"invoice_url": "https://example.com/invoice.pdf"},
         synapse.InvokeOptions{CostUSDC: fmt.Sprint(service.Pricing["amount"])},
     )
     if err != nil {
         panic(err)
     }
-    fmt.Println(result.InvocationID, result.Status, result.ChargedUSDC)
+
+    receipt, err := client.GetInvocation(context.Background(), result.InvocationID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(receipt.Status, receipt.ChargedUSDC)
 }
 ```
 
-## Token-Metered LLM Invoke
+## What You Can Build
 
-```go
-result, err := client.InvokeLLM(
-    context.Background(),
-    "svc_deepseek_chat",
-    map[string]any{"messages": []map[string]string{{"role": "user", "content": "hello"}}},
-    synapse.LLMInvokeOptions{MaxCostUSDC: "0.010000"},
-)
-```
+1. Agent tools that search and invoke paid APIs.
+2. Usage dashboards that reconcile receipt status and charged USDC.
+3. Provider backends that publish services after the consumer flow is working.
 
-Do not pass fixed-price `CostUSDC` to LLM services. Use `MaxCostUSDC` as an optional cap or omit it to let the Gateway compute the hold.
+Provider publishing is an advanced path. Start with Agent Key based consumption first, then add provider registration when you are ready to sell an API through SynapseNetwork.
 
-## Owner Auth and Provider Control
+## More Links
 
-Use owner auth only in backend or operator tooling. Agent runtime code should keep using `SynapseClient` with `SYNAPSE_AGENT_KEY`.
-
-```go
-auth, err := synapse.NewAuthFromPrivateKey(os.Getenv("SYNAPSE_OWNER_PRIVATE_KEY"), synapse.AuthOptions{
-    Environment: "prod",
-})
-if err != nil {
-    panic(err)
-}
-
-token, err := auth.GetToken(context.Background())
-credential, err := auth.IssueCredential(context.Background(), synapse.CredentialOptions{
-    Name: "agent-runtime",
-    MaxCalls: 100,
-    RPM: 60,
-    ExpiresInSec: 3600,
-})
-balance, err := auth.GetBalance(context.Background())
-guide, err := auth.Provider().GetRegistrationGuide(context.Background())
-
-fmt.Println(token != "", credential.Token, balance.OwnerBalance, len(guide.Steps))
-```
-
-Public owner/provider methods return named Go structs. Do not expose `map[string]any` as a top-level public result; reserve maps for request payloads, schemas, patches, and dynamic nested fields.
-
-## Verification
-
-```bash
-bash scripts/ci/go_checks.sh
-SYNAPSE_AGENT_KEY=agt_xxx go -C go run ./examples/free_service_smoke
-SYNAPSE_AGENT_KEY=agt_xxx go -C go run ./examples/llm_smoke
-SYNAPSE_AGENT_KEY=agt_xxx go -C go run ./examples/e2e
-SYNAPSE_OWNER_PRIVATE_KEY=0x... bash scripts/e2e/sdk_parity_e2e.sh --languages go --env staging
-```
+- SDK hub: <https://docs.synapse-network.ai/sdks>
+- Source: <https://github.com/SynapseNetworkAI/Synapse-Network-Sdk>

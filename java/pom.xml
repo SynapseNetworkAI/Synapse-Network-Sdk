@@ -5,9 +5,9 @@
 
   <groupId>ai.synapse-network</groupId>
   <artifactId>synapse-network-sdk</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>SynapseNetwork Java SDK</name>
-  <description>Official Java SDK for SynapseNetwork agent runtime APIs.</description>
+  <description>Official Java SDK for SynapseNetwork agent service discovery, paid API invocation, and receipts.</description>
   <url>https://www.synapse-network.ai</url>
 
   <licenses>
