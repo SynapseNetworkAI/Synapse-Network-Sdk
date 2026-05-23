@@ -33,6 +33,11 @@ target/
 # Local agent state
 .agents-memory/
 
+# Local environment files
+.env
+.env.*
+!.env.example
+
 # Local E2E evidence
 output/
 
