@@ -1,10 +1,10 @@
-# Python SDK — Staging Consumer E2E Plan
+# Python SDK - Staging Consumer E2E Plan
 
 > Internal operator-only test plan. This file is not a public SDK onboarding entry and should not be linked from package README files, registry pages, or the public SDK hub.
 
 ## Goal
 
-Validate that an existing staging Agent Key can invoke staging services through the Python SDK. This replaces the old cold-start chain flow; funding, wallet setup, and credential issuance are handled before the test.
+Validate that an existing staging Agent Key can invoke staging services through the Python SDK. Funding, wallet setup, and credential issuance are handled before this test starts.
 
 ## Required Environment
 
