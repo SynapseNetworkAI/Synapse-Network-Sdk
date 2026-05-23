@@ -1,5 +1,7 @@
 # Python SDK — Staging Provider E2E Plan
 
+> Internal operator-only test plan. This file is not a public SDK onboarding entry and should not be linked from package README files, registry pages, or the public SDK hub.
+
 ## Goal
 
 Validate provider onboarding against staging with a real provider wallet and a public HTTPS provider endpoint.

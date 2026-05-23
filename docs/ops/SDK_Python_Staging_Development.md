@@ -1,5 +1,7 @@
 # SDK Python Staging Development
 
+> Internal operator-only note. This file is not a public SDK onboarding entry and should not be linked from package README files, registry pages, or the public SDK hub.
+
 `python/` 是 SynapseNetwork 的官方 Python SDK 分发与联调目录。公开 quickstart 默认指向 prod；本文只记录 staging sandbox 的专项联调方式。
 
 ## 安装

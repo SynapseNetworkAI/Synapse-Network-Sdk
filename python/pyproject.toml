@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "synapse-network-ai-sdk"
-version = "1.0.0"
-description = "Official Synapse Network Client SDK for Service Discovery and Invocation"
+version = "1.0.1"
+description = "Official Python SDK for SynapseNetwork agent service discovery, paid API invocation, and receipts"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -17,6 +17,12 @@ dependencies = [
   "pydantic>=2.0.0"
 ]
 
+[project.urls]
+Homepage = "https://www.synapse-network.ai"
+Documentation = "https://docs.synapse-network.ai/sdks/python"
+Repository = "https://github.com/SynapseNetworkAI/Synapse-Network-Sdk"
+Issues = "https://github.com/SynapseNetworkAI/Synapse-Network-Sdk/issues"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=9.0.0",
@@ -26,7 +32,8 @@ dev = [
   "pytest-cov>=7.0.0",
   "ruff>=0.15.0",
   "mypy>=1.20.0",
-  "radon>=6.0.0"
+  "radon>=6.0.0",
+  "twine>=6.0.0"
 ]
 
 [tool.setuptools]
