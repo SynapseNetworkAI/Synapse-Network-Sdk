@@ -7,10 +7,10 @@ This runbook covers SynapseNetwork SDK package publishing. SDKs are **published*
 
 ## Release Model
 
-- `release_train_version` is the human-facing SDK train, for example `0.1.0`.
+- `release_train_version` is the human-facing SDK train, for example `1.0.0`.
 - `package_version` is the actual language package version.
 - New trains initialize all package versions to the train version.
-- A single language can hotfix forward, for example train `0.1.0` with Python package `0.1.1`.
+- A single language can hotfix forward, for example train `1.0.0` with Python package `1.0.1`.
 - Published package versions are immutable. Do not overwrite or republish the same version; publish a higher patch version instead.
 - SDK examples default to `environment="prod"` or omit the environment because prod is the SDK default. Package release channels are registry channels, not Gateway environments.
 
@@ -21,7 +21,7 @@ This runbook covers SynapseNetwork SDK package publishing. SDKs are **published*
 | Python | `synapse-network-ai-sdk` | PyPI | Optional TestPyPI dry-run before public release. |
 | TypeScript | `@synapse-network-ai/sdk` | npm | Use npm dist-tags such as `preview`, `next`, or `latest`. |
 | Go | `github.com/SynapseNetworkAI/Synapse-Network-Sdk/go` | Go module via GitHub | Because the module is in `/go`, tags must use `go/vX.Y.Z`. |
-| Java | `ai.synapsenetwork:synapse-network-sdk` | Maven Central | If Central is not ready, publish preview artifacts to GitHub Packages Maven. |
+| Java | `ai.synapse-network:synapse-network-sdk` | Maven Central | Public `1.0.0` is published on Maven Central. |
 | .NET | `SynapseNetwork.Sdk` | NuGet.org | Use NuGet package versions and never overwrite an existing version. |
 | All | GitHub Release | GitHub | One release page per train with links to all language packages. |
 
@@ -59,50 +59,29 @@ dotnet test tests/SynapseNetwork.Sdk.Tests/SynapseNetwork.Sdk.Tests.csproj
 dotnet pack src/SynapseNetwork.Sdk/SynapseNetwork.Sdk.csproj -c Release
 ```
 
-## GitHub Actions Publishing
+## Local Runner Publishing
 
-Use `.github/workflows/publish-sdk.yml` for controlled package publishing.
+Use Growing `/releases?tab=sdk-packages` for controlled package publishing.
+Each platform/version is one release-history row. Dry-run first, then publish
+with the Human Gate confirmation phrase `PUBLISH_SDK_<version>`.
 
-Inputs:
-
-- `release_train_version`
-- `package`
-- `package_version`
-- `channel`
-- `dry_run`
-
-Dry-run first:
+Run the worker locally after creating a dry-run or publish request:
 
 ```bash
-gh workflow run publish-sdk.yml \
-  --ref main \
-  -f release_train_version=0.1.0 \
-  -f package=python \
-  -f package_version=0.1.0 \
-  -f channel=preview \
-  -f dry_run=true
-```
-
-Publish only after dry-run succeeds:
-
-```bash
-gh workflow run publish-sdk.yml \
-  --ref main \
-  -f release_train_version=0.1.0 \
-  -f package=python \
-  -f package_version=0.1.0 \
-  -f channel=preview \
-  -f dry_run=false
+PYTHONPATH=. /Users/cliff/workspace/agent/.venv/bin/python \
+  <growing-repo>/run_sdk_publish_worker.py --once --release-id <package_release_id>
 ```
 
 ## Registry Secrets
 
-Registry credentials must stay in GitHub Actions secrets. Do not store them in Synapse-Network-Growing or any repo file.
+Registry credentials must stay in the local runner environment or equivalent
+secret storage. Do not store them in repo files, release metadata, or runner
+logs.
 
 - `PYPI_API_TOKEN`
 - `NPM_TOKEN`
 - `NUGET_API_KEY`
-- Maven Central or GitHub Packages credentials
+- Maven Central credentials
 - GPG signing secrets if Maven Central requires signing
 
 ## Go Tag Rule
@@ -116,11 +95,11 @@ go/go.mod -> module github.com/SynapseNetworkAI/Synapse-Network-Sdk/go
 Therefore Go package publishing uses subdirectory tags:
 
 ```bash
-git tag go/v0.1.0
-git push origin go/v0.1.0
+git tag go/v1.0.0
+git push origin go/v1.0.0
 ```
 
-Do not rely on a root `v0.1.0` tag for the Go module.
+Do not rely on a root `v1.0.0` tag for the Go module.
 
 ## Growing Release Center
 

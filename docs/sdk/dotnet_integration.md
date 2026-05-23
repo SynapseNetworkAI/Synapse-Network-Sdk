@@ -4,11 +4,13 @@ The .NET SDK targets `net8.0`. It supports the full public Synapse SDK surface: 
 
 ## Install
 
-The preview package project lives in `dotnet/src/SynapseNetwork.Sdk` and is intended for NuGet publication as `SynapseNetwork.Sdk`.
+The published NuGet package is `SynapseNetwork.Sdk` version `1.0.0`.
 
 ```xml
-<PackageReference Include="SynapseNetwork.Sdk" Version="0.1.0-preview" />
+<PackageReference Include="SynapseNetwork.Sdk" Version="1.0.0" />
 ```
+
+Registry: <https://www.nuget.org/packages/SynapseNetwork.Sdk/1.0.0>
 
 ## Fixed-Price API Invoke
 

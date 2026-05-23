@@ -50,6 +50,14 @@ Additional runtime preferences:
 4. Use `SynapseProvider` from `auth.provider()` only when the user explicitly asks to publish or manage provider services.
 5. For examples, use `python/examples/consumer_call_provider.py` to call a service, `python/examples/provider_staging_onboarding.py` to publish a provider API, and `python/examples/consumer_wallet_to_invoke.py` for a full fresh-wallet flow.
 
+Published package links:
+
+- Python: `synapse-network-ai-sdk==1.0.0` on https://pypi.org/project/synapse-network-ai-sdk/1.0.0/
+- TypeScript: `@synapse-network-ai/sdk@1.0.0` on https://www.npmjs.com/package/@synapse-network-ai/sdk/v/1.0.0
+- Go: `github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@v1.0.0` on https://pkg.go.dev/github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@v1.0.0
+- Java: `ai.synapse-network:synapse-network-sdk:1.0.0` on https://repo1.maven.org/maven2/ai/synapse-network/synapse-network-sdk/1.0.0/
+- .NET: `SynapseNetwork.Sdk 1.0.0` on https://www.nuget.org/packages/SynapseNetwork.Sdk/1.0.0
+
 Python pattern:
 
 Python 模式：

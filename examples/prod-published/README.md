@@ -25,11 +25,11 @@ production smoke account.
 | TypeScript | `@synapse-network-ai/sdk` | `1.0.0` |
 | Go | `github.com/SynapseNetworkAI/Synapse-Network-Sdk/go` | `v1.0.0` |
 | .NET | `SynapseNetwork.Sdk` | `1.0.0` |
-| Java | `ai.synapse-network:synapse-network-sdk` | release blocker until public |
+| Java | `ai.synapse-network:synapse-network-sdk` | `1.0.0` |
 
-Java is handled as a strict published-package gate. If Maven Central does not
-serve `ai.synapse-network:synapse-network-sdk:1.0.0`, the runner records
-`BLOCKED_UNPUBLISHED_JAVA` and does not fall back to this repository's source.
+Java is handled as a strict published-package gate. The runner verifies Maven
+Central serves `ai.synapse-network:synapse-network-sdk:1.0.0` and does not fall
+back to this repository's source.
 
 ## Setup
 
