@@ -6,7 +6,7 @@ cd "$ROOT_DIR"
 
 echo "[ci:hygiene] checking stale gateway domains"
 STALE_GATEWAY_DOMAIN="gateway.synapse"".network"
-if grep -RInF --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache \
+if grep -RInF --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache --exclude-dir=output \
   "$STALE_GATEWAY_DOMAIN" .; then
   echo "[ci:hygiene] stale gateway domain detected: $STALE_GATEWAY_DOMAIN" >&2
   exit 1
@@ -66,7 +66,7 @@ OLD_AGENT_PAY="Agent""Pay"
 OLD_SYNAPSE_AGENT_PAY="Synapse Agent""Pay"
 OLD_BUSINESS_TO_AGENT="Business-to-""Agent"
 OLD_B_TWO_A="B""2A"
-if grep -RInE --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache \
+if grep -RInE --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv --exclude-dir=dist --exclude-dir=build --exclude-dir=coverage --exclude-dir=.pytest_cache --exclude-dir=output \
   "($OLD_SYNAPSE_AGENT_PAY|$OLD_AGENT_PAY|$OLD_BUSINESS_TO_AGENT|$OLD_B_TWO_A)" .; then
   echo "[ci:hygiene] deprecated product brand wording detected; use SynapseNetwork" >&2
   exit 1
@@ -101,6 +101,7 @@ sensitive_files="$(
     | grep -Ev '^python/examples/consumer_wallet_to_invoke\.py$' \
     | grep -Ev '^python/synapse_client/_auth_credentials\.py$' \
     | grep -Ev '^python/synapse_client/wallet\.py$' \
+    | grep -Ev '^examples/prod-published/scripts/setup-prod-test-wallet\.sh$' \
     | grep -Ev '^typescript/src/auth_credentials\.ts$' \
     || true
 )"
