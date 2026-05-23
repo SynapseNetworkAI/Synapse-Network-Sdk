@@ -1,0 +1,85 @@
+<!doctype html><meta charset="utf-8"><title>typescript/README.md</title><style>
+:root { color-scheme: light; }
+body { margin: 0; background: #f6f8fb; color: #111827; font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+main { max-width: 980px; margin: 40px auto; background: white; border: 1px solid #d8dee9; border-radius: 18px; padding: 42px 54px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08); }
+h1 { font-size: 42px; line-height: 1.1; margin: 0 0 18px; }
+h2 { margin-top: 34px; border-top: 1px solid #edf2f7; padding-top: 24px; }
+h3 { margin-top: 24px; }
+pre { background: #0f172a; color: #e2e8f0; padding: 18px; border-radius: 14px; overflow: auto; }
+code { background: #eef2ff; color: #3730a3; padding: 2px 5px; border-radius: 5px; }
+pre code { background: transparent; color: inherit; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 18px 0; }
+th, td { border: 1px solid #d8dee9; padding: 10px 12px; text-align: left; vertical-align: top; }
+th { background: #f8fafc; }
+a { color: #0369a1; }
+blockquote { margin: 20px 0; padding: 10px 18px; border-left: 4px solid #06b6d4; background: #ecfeff; }
+.badge { display: inline-block; margin-bottom: 18px; color: #64748b; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+</style><main><span class="badge">SynapseNetwork SDK public preview</span>
+<h1>SynapseNetwork TypeScript SDK</h1>
+<p>Official TypeScript SDK for agents and applications that use SynapseNetwork to discover services, invoke paid APIs, and receive auditable receipts.</p>
+<h2>Install</h2>
+<pre><code>npm install @synapse-network-ai/sdk</code></pre>
+<p><code>ethers</code> is a peer dependency for owner wallet authentication:</p>
+<pre><code>npm install ethers</code></pre>
+<h2>Quickstart</h2>
+<p>Create an Agent Key in the SynapseNetwork dashboard, then pass it to <code>SynapseClient</code>.</p>
+<pre><code>import { SynapseClient } from &quot;@synapse-network-ai/sdk&quot;;
+
+const client = new SynapseClient({
+  credential: process.env.SYNAPSE_AGENT_KEY!,
+  environment: &quot;prod&quot;,
+});
+
+const services = await client.search(&quot;invoice extraction&quot;, { limit: 5 });
+const service = services[0];
+
+const result = await client.invoke(
+  service.serviceId ?? service.id!,
+  { invoice_url: &quot;https://example.com/invoice.pdf&quot; },
+  {
+    costUsdc: String(service.pricing?.amount ?? &quot;0&quot;),
+    idempotencyKey: &quot;invoice-job-001&quot;,
+  }
+);
+
+const receipt = await client.getInvocation(result.invocationId);
+console.log(receipt.status, receipt.chargedUsdc);</code></pre>
+<h2>Token-metered LLM Calls</h2>
+<p>LLM services use token-metered pricing. Pass an optional spend cap instead of a fixed <code>costUsdc</code>:</p>
+<pre><code>const result = await client.invokeLlm(
+  &quot;svc_deepseek_chat&quot;,
+  {
+    messages: [{ role: &quot;user&quot;, content: &quot;Summarize this document.&quot; }],
+    max_tokens: 512,
+  },
+  {
+    maxCostUsdc: &quot;0.010000&quot;,
+    idempotencyKey: &quot;llm-job-001&quot;,
+  }
+);
+
+console.log(result.usage?.inputTokens, result.usage?.outputTokens);
+console.log(result.synapse?.chargedUsdc);</code></pre>
+<h2>Provider APIs</h2>
+<p>If you operate an API that agents should call, authenticate as the owner and use the provider facade:</p>
+<pre><code>import { Wallet } from &quot;ethers&quot;;
+import { SynapseAuth } from &quot;@synapse-network-ai/sdk&quot;;
+
+const wallet = new Wallet(process.env.SYNAPSE_OWNER_PRIVATE_KEY!);
+const auth = SynapseAuth.fromWallet(wallet, { environment: &quot;prod&quot; });
+const provider = auth.provider();
+
+const registered = await provider.registerService({
+  serviceName: &quot;Invoice OCR&quot;,
+  endpointUrl: &quot;https://provider.example.com/invoke&quot;,
+  basePriceUsdc: &quot;0.008&quot;,
+  descriptionForModel: &quot;Extract structured invoice fields from invoice images.&quot;,
+});
+
+console.log(registered.serviceId);</code></pre>
+<p>Provider setup is optional for consumers. Agent runtime code usually only needs <code>SynapseClient</code>.</p>
+<h2>Links</h2>
+<ul><li>SDK docs: <a href="https://docs.synapse-network.ai/sdks/typescript">docs.synapse-network.ai/sdks/typescript</a></li><li>npm: <a href="https://www.npmjs.com/package/@synapse-network-ai/sdk">npmjs.com/package/@synapse-network-ai/sdk</a></li><li>Source: <a href="https://github.com/SynapseNetworkAI/Synapse-Network-Sdk">github.com/SynapseNetworkAI/Synapse-Network-Sdk</a></li></ul>
+<h2>License</h2>
+<p>MIT</p>
+</main>

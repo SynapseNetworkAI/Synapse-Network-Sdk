@@ -1,0 +1,76 @@
+<!doctype html><meta charset="utf-8"><title>python/README.md</title><style>
+:root { color-scheme: light; }
+body { margin: 0; background: #f6f8fb; color: #111827; font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+main { max-width: 980px; margin: 40px auto; background: white; border: 1px solid #d8dee9; border-radius: 18px; padding: 42px 54px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08); }
+h1 { font-size: 42px; line-height: 1.1; margin: 0 0 18px; }
+h2 { margin-top: 34px; border-top: 1px solid #edf2f7; padding-top: 24px; }
+h3 { margin-top: 24px; }
+pre { background: #0f172a; color: #e2e8f0; padding: 18px; border-radius: 14px; overflow: auto; }
+code { background: #eef2ff; color: #3730a3; padding: 2px 5px; border-radius: 5px; }
+pre code { background: transparent; color: inherit; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 18px 0; }
+th, td { border: 1px solid #d8dee9; padding: 10px 12px; text-align: left; vertical-align: top; }
+th { background: #f8fafc; }
+a { color: #0369a1; }
+blockquote { margin: 20px 0; padding: 10px 18px; border-left: 4px solid #06b6d4; background: #ecfeff; }
+.badge { display: inline-block; margin-bottom: 18px; color: #64748b; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+</style><main><span class="badge">SynapseNetwork SDK public preview</span>
+<h1>SynapseNetwork Python SDK</h1>
+<p>Official Python SDK for agents and applications that use SynapseNetwork to discover services, invoke paid APIs, and receive auditable receipts.</p>
+<h2>Install</h2>
+<pre><code>pip install synapse-network-ai-sdk</code></pre>
+<h2>Quickstart</h2>
+<p>Create an Agent Key in the SynapseNetwork dashboard, then export it before your app starts:</p>
+<pre><code>export SYNAPSE_AGENT_KEY=agt_xxx</code></pre>
+<p>Search for a service, invoke it with the discovered price, then read the receipt:</p>
+<pre><code>from synapse_client import SynapseClient
+
+client = SynapseClient()
+
+services = client.search(&quot;invoice extraction&quot;, limit=5)
+service = services[0]
+
+result = client.invoke(
+    service.service_id,
+    {&quot;invoice_url&quot;: &quot;https://example.com/invoice.pdf&quot;},
+    cost_usdc=str(service.price_usdc),
+    idempotency_key=&quot;invoice-job-001&quot;,
+)
+
+receipt = client.get_invocation(result.invocation_id)
+print(receipt.status, receipt.charged_usdc)</code></pre>
+<h2>Token-metered LLM Calls</h2>
+<p>LLM services use token-metered pricing. Pass an optional spend cap instead of a fixed <code>cost_usdc</code>:</p>
+<pre><code>result = client.invoke_llm(
+    &quot;svc_deepseek_chat&quot;,
+    {
+        &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Summarize this document.&quot;}],
+        &quot;max_tokens&quot;: 512,
+    },
+    max_cost_usdc=&quot;0.010000&quot;,
+    idempotency_key=&quot;llm-job-001&quot;,
+)
+
+print(result.usage.input_tokens, result.usage.output_tokens)
+print(result.synapse.charged_usdc)</code></pre>
+<h2>Provider APIs</h2>
+<p>If you operate an API that agents should call, authenticate as the owner and use the provider facade:</p>
+<pre><code>from synapse_client import SynapseAuth
+
+auth = SynapseAuth.from_private_key(&quot;0xYOUR_OWNER_PRIVATE_KEY&quot;, environment=&quot;prod&quot;)
+provider = auth.provider()
+
+registered = provider.register_service(
+    service_name=&quot;Invoice OCR&quot;,
+    endpoint_url=&quot;https://provider.example.com/invoke&quot;,
+    base_price_usdc=&quot;0.008&quot;,
+    description_for_model=&quot;Extract structured invoice fields from invoice images.&quot;,
+)
+
+print(registered.service_id)</code></pre>
+<p>Provider setup is optional for consumers. Agent runtime code usually only needs <code>SynapseClient</code>.</p>
+<h2>Links</h2>
+<ul><li>SDK docs: <a href="https://docs.synapse-network.ai/sdks/python">docs.synapse-network.ai/sdks/python</a></li><li>PyPI: <a href="https://pypi.org/project/synapse-network-ai-sdk/">pypi.org/project/synapse-network-ai-sdk</a></li><li>Source: <a href="https://github.com/SynapseNetworkAI/Synapse-Network-Sdk">github.com/SynapseNetworkAI/Synapse-Network-Sdk</a></li></ul>
+<h2>License</h2>
+<p>MIT</p>
+</main>

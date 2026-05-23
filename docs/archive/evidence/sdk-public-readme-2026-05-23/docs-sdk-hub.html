@@ -1,0 +1,60 @@
+<!doctype html><meta charset="utf-8"><title>docs/sdk/README.md</title><style>
+:root { color-scheme: light; }
+body { margin: 0; background: #f6f8fb; color: #111827; font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+main { max-width: 980px; margin: 40px auto; background: white; border: 1px solid #d8dee9; border-radius: 18px; padding: 42px 54px; box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08); }
+h1 { font-size: 42px; line-height: 1.1; margin: 0 0 18px; }
+h2 { margin-top: 34px; border-top: 1px solid #edf2f7; padding-top: 24px; }
+h3 { margin-top: 24px; }
+pre { background: #0f172a; color: #e2e8f0; padding: 18px; border-radius: 14px; overflow: auto; }
+code { background: #eef2ff; color: #3730a3; padding: 2px 5px; border-radius: 5px; }
+pre code { background: transparent; color: inherit; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 18px 0; }
+th, td { border: 1px solid #d8dee9; padding: 10px 12px; text-align: left; vertical-align: top; }
+th { background: #f8fafc; }
+a { color: #0369a1; }
+blockquote { margin: 20px 0; padding: 10px 18px; border-left: 4px solid #06b6d4; background: #ecfeff; }
+.badge { display: inline-block; margin-bottom: 18px; color: #64748b; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+</style><main><span class="badge">SynapseNetwork SDK public preview</span>
+<h1>SynapseNetwork SDK Hub</h1>
+<p>SynapseNetwork SDKs let agents discover services, invoke paid APIs, and receive auditable receipts. Start here when you want to add SynapseNetwork to an application, agent runtime, or provider API.</p>
+<h2>Install</h2>
+<table>
+<tr><th>Language</th><th>Install</th><th>Guide</th></tr>
+<tr><td>Python</td><td><code>pip install synapse-network-ai-sdk</code></td><td><a href="./python_integration.md">Python integration</a></td></tr>
+<tr><td>TypeScript</td><td><code>npm install @synapse-network-ai/sdk</code></td><td><a href="./typescript_integration.md">TypeScript integration</a></td></tr>
+<tr><td>Go</td><td><code>go get github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@latest</code></td><td><a href="./go_integration.md">Go integration</a></td></tr>
+<tr><td>Java</td><td><code>ai.synapse-network:synapse-network-sdk</code></td><td><a href="./java_integration.md">Java integration</a></td></tr>
+<tr><td>.NET</td><td><code>dotnet add package SynapseNetwork.Sdk</code></td><td><a href="./dotnet_integration.md">.NET integration</a></td></tr>
+</table>
+<h2>First Agent Flow</h2>
+<ol><li>Create an Agent Key in the SynapseNetwork dashboard.</li><li>Pass it to the SDK as <code>SYNAPSE_AGENT_KEY</code> or an explicit constructor option.</li><li>Search for a service.</li><li>Invoke it with the latest discovered price.</li><li>Read the invocation receipt.</li></ol>
+<pre><code>from synapse_client import SynapseClient
+
+client = SynapseClient()
+service = client.search(&quot;invoice extraction&quot;, limit=5)[0]
+
+result = client.invoke(
+    service.service_id,
+    {&quot;invoice_url&quot;: &quot;https://example.com/invoice.pdf&quot;},
+    cost_usdc=str(service.price_usdc),
+    idempotency_key=&quot;invoice-job-001&quot;,
+)
+
+receipt = client.get_invocation(result.invocation_id)
+print(receipt.status, receipt.charged_usdc)</code></pre>
+<h2>What The SDK Handles</h2>
+<ul><li>Service discovery across SynapseNetwork provider APIs.</li><li>Fixed-price API invocation with price mismatch protection.</li><li>Token-metered LLM invocation with optional spend caps.</li><li>Receipt lookup and settlement metadata.</li><li>Owner-authenticated provider publishing flows when you are ready to expose your own API.</li></ul>
+<h2>Consumer vs Provider</h2>
+<table>
+<tr><th>Role</th><th>Start with</th><th>Why</th></tr>
+<tr><td>Agent or app calling APIs</td><td><code>SynapseClient</code></td><td>Search, invoke, and read receipts with an Agent Key.</td></tr>
+<tr><td>API provider publishing services</td><td><code>SynapseAuth</code> then <code>auth.provider()</code></td><td>Register services, manage provider secrets, and inspect service health.</td></tr>
+</table>
+<p>Most integrations only need <code>SynapseClient</code> on day one. Provider publishing is a second path for teams exposing APIs to agents.</p>
+<h2>Public References</h2>
+<ul><li>Product site: <a href="https://www.synapse-network.ai">www.synapse-network.ai</a></li><li>SDK source: <a href="https://github.com/SynapseNetworkAI/Synapse-Network-Sdk">github.com/SynapseNetworkAI/Synapse-Network-Sdk</a></li><li>Python package: <a href="https://pypi.org/project/synapse-network-ai-sdk/">PyPI</a></li><li>TypeScript package: <a href="https://www.npmjs.com/package/@synapse-network-ai/sdk">npm</a></li><li>Go package: <a href="https://pkg.go.dev/github.com/SynapseNetworkAI/Synapse-Network-Sdk/go">pkg.go.dev</a></li><li>Java package: <a href="https://repo1.maven.org/maven2/ai/synapse-network/synapse-network-sdk/">Maven Central</a></li><li>.NET package: <a href="https://www.nuget.org/packages/SynapseNetwork.Sdk">NuGet</a></li></ul>
+<h2>Environment</h2>
+<p>The public default is production:</p>
+<pre><code>https://api.synapse-network.ai</code></pre>
+<p>Use an explicit gateway URL only when you are targeting a private deployment or a documented sandbox.</p>
+</main>

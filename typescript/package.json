@@ -1,9 +1,28 @@
 {
   "name": "@synapse-network-ai/sdk",
-  "version": "1.0.0",
-  "description": "Official TypeScript SDK for the Synapse Network API Gateway",
+  "version": "1.0.1",
+  "description": "Official TypeScript SDK for SynapseNetwork agent service discovery, paid API invocation, and receipts.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "license": "MIT",
+  "homepage": "https://docs.synapse-network.ai/sdks/typescript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SynapseNetworkAI/Synapse-Network-Sdk.git",
+    "directory": "typescript"
+  },
+  "keywords": [
+    "synapse-network",
+    "ai-agents",
+    "agent-payments",
+    "sdk",
+    "usdc",
+    "service-discovery"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },

@@ -1,30 +1,73 @@
-# sdk-python
+# SynapseNetwork Python SDK
 
-`python/` 是 Synapse 的官方 Python SDK 分发与联调目录。
+Official Python SDK for agents and applications that use SynapseNetwork to discover services, invoke paid APIs, and receive auditable receipts.
 
-## 文档入口
-
-1. 总入口：`docs/sdk/README.md`
-2. Python 接入：`docs/sdk/python_integration.md`
-3. Python Provider 接入：`docs/sdk/python_provider_integration.md`
-4. TypeScript 接入：`docs/sdk/typescript_integration.md`
-5. Staging 开发与验证：`docs/ops/SDK_Python_Staging_Development.md`
-6. Python 冷启动 E2E：`docs/test/python-consumer-cold-start-e2e-plan.md`
-7. Python Provider Onboarding E2E：`docs/test/python-provider-onboarding-e2e-plan.md`
-8. Python bugfix：`docs/bugfix/python/bugs.md`
-
-## 常用命令
+## Install
 
 ```bash
-cd /home/alex/Documents/cliff/Synapse-Network-Sdk/python
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-PYTHONPATH="$PWD" .venv/bin/python examples/smoke_test.py --query "名人名言"
-PYTHONPATH="$PWD" .venv/bin/python -m pytest synapse_client/test/test_auth_unit.py synapse_client/test/test_client_unit.py synapse_client/test/test_consumer_e2e.py synapse_client/test/test_provider_e2e.py -q -s
+pip install synapse-network-ai-sdk
 ```
 
-## 说明
+## Quickstart
 
-本文件现在只保留项目入口信息。  
-完整接入、自动化 E2E、bugfix 记录统一维护在根 `docs/`。
+Create an Agent Key in the SynapseNetwork dashboard, then export it before your app starts:
+
+```bash
+export SYNAPSE_AGENT_KEY=agt_xxx
+```
+
+Search for a service, invoke it with the discovered price, then read the receipt:
+
+```python
+from synapse_client import SynapseClient
+
+client = SynapseClient()
+
+services = client.search("invoice extraction", limit=5)
+service = services[0]
+
+result = client.invoke(
+    service.service_id,
+    {"invoice_url": "https://example.com/invoice.pdf"},
+    cost_usdc=str(service.price_usdc),
+    idempotency_key="invoice-job-001",
+)
+
+receipt = client.get_invocation(result.invocation_id)
+print(receipt.status, receipt.charged_usdc)
+```
+
+## Token-metered LLM Calls
+
+LLM services use token-metered pricing. Pass an optional spend cap instead of a fixed `cost_usdc`:
+
+```python
+result = client.invoke_llm(
+    "svc_deepseek_chat",
+    {
+        "messages": [{"role": "user", "content": "Summarize this document."}],
+        "max_tokens": 512,
+    },
+    max_cost_usdc="0.010000",
+    idempotency_key="llm-job-001",
+)
+
+print(result.usage.input_tokens, result.usage.output_tokens)
+print(result.synapse.charged_usdc)
+```
+
+## Provider APIs
+
+If you operate an API that agents should call, use the provider facade from backend or operator tooling after owner authentication. Provider setup lets you register a service, publish pricing, read health, and reconcile earnings.
+
+Provider setup is optional for consumers. Agent runtime code usually only needs `SynapseClient`.
+
+## Links
+
+- SDK docs: [docs.synapse-network.ai/sdks/python](https://docs.synapse-network.ai/sdks/python)
+- PyPI: [pypi.org/project/synapse-network-ai-sdk](https://pypi.org/project/synapse-network-ai-sdk/)
+- Source: [github.com/SynapseNetworkAI/Synapse-Network-Sdk](https://github.com/SynapseNetworkAI/Synapse-Network-Sdk)
+
+## License
+
+MIT

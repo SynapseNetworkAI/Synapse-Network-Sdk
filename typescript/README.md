@@ -1,6 +1,6 @@
-# TypeScript SDK Integration
+# SynapseNetwork TypeScript SDK
 
-Use the TypeScript SDK when a Node, browser, worker, or agent application needs to discover SynapseNetwork services, invoke paid APIs, and read receipts.
+Official TypeScript SDK for agents and applications that use SynapseNetwork to discover services, invoke paid APIs, and receive auditable receipts.
 
 ## Install
 
@@ -8,15 +8,15 @@ Use the TypeScript SDK when a Node, browser, worker, or agent application needs 
 npm install @synapse-network-ai/sdk
 ```
 
-Install `ethers` when you need owner wallet authentication or provider publishing:
+`ethers` is a peer dependency for owner wallet authentication:
 
 ```bash
 npm install ethers
 ```
 
-## Create A Client
+## Quickstart
 
-Create an Agent Key in the SynapseNetwork dashboard, then pass it to the SDK:
+Create an Agent Key in the SynapseNetwork dashboard, then pass it to `SynapseClient`.
 
 ```ts
 import { SynapseClient } from "@synapse-network-ai/sdk";
@@ -25,15 +25,7 @@ const client = new SynapseClient({
   credential: process.env.SYNAPSE_AGENT_KEY!,
   environment: "prod",
 });
-```
 
-The TypeScript SDK does not read environment variables internally. Read configuration in your app and pass it into the constructor.
-
-## Search And Invoke
-
-Always invoke fixed-price services with the price returned by discovery. This protects the caller if the provider changes price between search and execution.
-
-```ts
 const services = await client.search("invoice extraction", { limit: 5 });
 const service = services[0];
 
@@ -47,12 +39,12 @@ const result = await client.invoke(
 );
 
 const receipt = await client.getInvocation(result.invocationId);
-console.log(receipt.invocationId, receipt.status, receipt.chargedUsdc);
+console.log(receipt.status, receipt.chargedUsdc);
 ```
 
-## Token-metered LLM Invoke
+## Token-metered LLM Calls
 
-LLM services use token-metered billing. Do not pass fixed-price `costUsdc`; pass an optional cap when you want a hard upper bound.
+LLM services use token-metered pricing. Pass an optional spend cap instead of a fixed `costUsdc`:
 
 ```ts
 const result = await client.invokeLlm(
@@ -68,10 +60,10 @@ const result = await client.invokeLlm(
 );
 
 console.log(result.usage?.inputTokens, result.usage?.outputTokens);
-console.log(result.synapse?.chargedUsdc, result.synapse?.releasedUsdc);
+console.log(result.synapse?.chargedUsdc);
 ```
 
-## Provider Publishing
+## Provider APIs
 
 If you operate an API that agents should call, use the provider facade from backend or operator tooling after owner authentication. Provider setup lets you register a service, publish pricing, read health, and reconcile earnings.
 
@@ -79,6 +71,10 @@ Provider setup is optional for consumers. Agent runtime code usually only needs 
 
 ## Links
 
-- SDK hub: [README](./README.md)
-- npm: [@synapse-network-ai/sdk](https://www.npmjs.com/package/@synapse-network-ai/sdk)
-- Source: [Synapse-Network-Sdk](https://github.com/SynapseNetworkAI/Synapse-Network-Sdk)
+- SDK docs: [docs.synapse-network.ai/sdks/typescript](https://docs.synapse-network.ai/sdks/typescript)
+- npm: [npmjs.com/package/@synapse-network-ai/sdk](https://www.npmjs.com/package/@synapse-network-ai/sdk)
+- Source: [github.com/SynapseNetworkAI/Synapse-Network-Sdk](https://github.com/SynapseNetworkAI/Synapse-Network-Sdk)
+
+## License
+
+MIT

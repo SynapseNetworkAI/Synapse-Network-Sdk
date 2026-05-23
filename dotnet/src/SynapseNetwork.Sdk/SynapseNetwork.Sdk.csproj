@@ -5,10 +5,19 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>SynapseNetwork.Sdk</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Synapse Network Team</Authors>
-    <Description>Official .NET SDK for SynapseNetwork agent runtime APIs.</Description>
+    <Description>Official .NET SDK for SynapseNetwork agent service discovery, paid API invocation, and receipts.</Description>
+    <PackageProjectUrl>https://www.synapse-network.ai</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SynapseNetworkAI/Synapse-Network-Sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>synapse-network;ai-agents;agent-payments;sdk;usdc;service-discovery</PackageTags>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Nethereum.Signer" Version="5.0.0" />
   </ItemGroup>
