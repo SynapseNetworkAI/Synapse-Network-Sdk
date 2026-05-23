@@ -272,7 +272,7 @@
         "scripts/e2e/sdk_wave1_local.sh",
         "docs/test/consumer-e2e-plan.md",
         "docs/test/typescript-provider-onboarding-e2e-plan.md",
-        "docs/test/python-consumer-cold-start-e2e-plan.md",
+        "docs/test/python-consumer-staging-e2e-plan.md",
         "docs/test/python-provider-onboarding-e2e-plan.md"
       ],
       "supporting_files": [
