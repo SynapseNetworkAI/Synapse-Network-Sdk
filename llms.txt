@@ -11,6 +11,7 @@ This repository contains the official SynapseNetwork SDKs for TypeScript, Python
 - **Production URL**: `https://api.synapse-network.ai`; prod is the default SDK environment.
 - **Website**: `https://www.synapse-network.ai`.
 - **SDK Docs**: `https://docs.synapse-network.ai/sdks`.
+- **Published SDK packages**: Python `synapse-network-ai-sdk==1.0.0`, TypeScript `@synapse-network-ai/sdk@1.0.0`, Go `github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@v1.0.0`, Java `ai.synapse-network:synapse-network-sdk:1.0.0`, .NET `SynapseNetwork.Sdk 1.0.0`.
 - **Staging Sandbox**: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC for gated E2E and integration rehearsals only.
 - **Money Rule**: Never recompute prices with floating-point math. Pass discovered prices and spend limits through exactly; use string amounts, for example `"0.05"`.
 

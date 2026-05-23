@@ -4,15 +4,17 @@ The Java SDK targets Java 17 and newer. Kotlin and other JVM languages can call 
 
 ## Install
 
-The preview Maven artifact is defined in `java/pom.xml`:
+The published Maven Central artifact is:
 
 ```xml
 <dependency>
-  <groupId>ai.synapsenetwork</groupId>
+  <groupId>ai.synapse-network</groupId>
   <artifactId>synapse-network-sdk</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
+
+Registry: <https://repo1.maven.org/maven2/ai/synapse-network/synapse-network-sdk/1.0.0/>
 
 ## Fixed-Price API Invoke
 

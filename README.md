@@ -49,6 +49,18 @@ Recommended path:
 5. Run one fixed-price API invoke and one token-metered LLM invoke.
 6. Read the invocation receipt and verify settlement metadata.
 
+## Published Packages
+
+| Language | Package | Version | Registry |
+| --- | --- | --- | --- |
+| Python | `synapse-network-ai-sdk` | `1.0.0` | [PyPI](https://pypi.org/project/synapse-network-ai-sdk/1.0.0/) |
+| TypeScript | `@synapse-network-ai/sdk` | `1.0.0` | [npm](https://www.npmjs.com/package/@synapse-network-ai/sdk/v/1.0.0) |
+| Go | `github.com/SynapseNetworkAI/Synapse-Network-Sdk/go` | `v1.0.0` | [pkg.go.dev](https://pkg.go.dev/github.com/SynapseNetworkAI/Synapse-Network-Sdk/go@v1.0.0) |
+| Java/JVM | `ai.synapse-network:synapse-network-sdk` | `1.0.0` | [Maven Central](https://repo1.maven.org/maven2/ai/synapse-network/synapse-network-sdk/1.0.0/) |
+| .NET | `SynapseNetwork.Sdk` | `1.0.0` | [NuGet](https://www.nuget.org/packages/SynapseNetwork.Sdk/1.0.0) |
+
+Source repository: <https://github.com/SynapseNetworkAI/Synapse-Network-Sdk>
+
 ### Staging Sandbox
 
 Staging remains available for gated E2E and integration rehearsals only: `https://api-staging.synapse-network.ai` on Arbitrum Sepolia with MockUSDC test assets. Do not use staging credentials or MockUSDC examples as the public production quickstart.
