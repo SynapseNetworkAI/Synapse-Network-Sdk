@@ -44,6 +44,19 @@ Generated for the `python-service` profile. Treat the files below as the source 
 5. If `project_bootstrap_ready` is `false`, finish the first runbook step before large edits.
 6. If only `project_bootstrap_complete` is `false`, treat the first step as recommended follow-up work.
 
+## Bug List Workflow
+
+For real SDK or developer-experience bugs, use the workspace Bug List workflow
+before fixing. Read `/Users/cliff/workspace/agent/llms.txt` for the workspace
+entry rule and
+`/Users/cliff/workspace/agent/Synapse-Network-Growing/.agents/skills/bug-list-agent/SKILL.md`
+for authoritative skill/MCP details.
+
+Default contract: intake or dedupe, claim before fixing, link branch/commit/PR,
+add validation evidence, and close only when commit or PR evidence plus
+verification results are complete. Do not put tokens, cookies, private keys, or
+secret values into bug evidence.
+
 ## Validation
 
 1. `amem plan-check .`
